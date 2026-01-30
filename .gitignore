@@ -1,7 +1,3 @@
-# Dynare output directories
-+lesotho_model/
-lesotho_model/
-
 # Dynare log files
 *.log
 
