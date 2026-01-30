@@ -1,0 +1,15 @@
+# Dynare output directories
++lesotho_model/
+lesotho_model/
+
+# Dynare log files
+*.log
+
+# Typst intermediate files
+*.typ
+
+# OS files
+.DS_Store
+
+# Temporary files
+*~
