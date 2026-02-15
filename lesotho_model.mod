@@ -286,13 +286,15 @@ model(linear);
     // 7. Reserves Gap Dynamics - Equation 18
     // Government spending drains reserves (import leakage)
     // Exchange rate pressure affects reserves
+    // Uses lagged values as stock variables react to past flows
     res_gap_lso = delta_res * res_gap_lso(-1)
-                - f_1 * g_lso
-                - f_2 * z_lso
+                - f_1 * g_lso(-1)
+                - f_2 * z_lso(-1)
                 + eps_res_lso;
 
     // 8. Desired Reserves (AR process to steady state)
-    res_bar_lso = rho_res_bar * res_bar_lso(-1);
+    // Mean-reverts to res_ss (ARA for CCEs target: 4.7 months)
+    res_bar_lso = (1 - rho_res_bar) * res_ss + rho_res_bar * res_bar_lso(-1);
 
     // 9. Actual Reserves (identity)
     res_lso = res_gap_lso + res_bar_lso;
@@ -378,8 +380,8 @@ initval;
     z_lso       = 0;
     s_lso       = 0;
     res_gap_lso = 0;
-    res_lso     = 0;
-    res_bar_lso = 0;
+    res_lso     = res_ss;
+    res_bar_lso = res_ss;
     prem_lso    = 0;
     g_lso       = 0;
 
@@ -427,9 +429,9 @@ shocks;
     var eps_pi_row;     stderr 0.25;
     var eps_i_row;      stderr 0.25;
 
-    // Commodity shocks
-    var eps_oil;        stderr 5.0;     // Oil is volatile
-    var eps_food;       stderr 3.0;     // Food is volatile
+    // Commodity shocks (reduced to minimize drift from unit roots)
+    var eps_oil;        stderr 3.0;     // Oil volatility (reduced from 5.0)
+    var eps_food;       stderr 2.0;     // Food volatility (reduced from 3.0)
 end;
 
 // -------------------------------------------------------------------------
