@@ -172,7 +172,7 @@ parameters
 // Lesotho IS Curve (from Figure 3 posterior estimates)
 alpha_1     = 0.50;     // Output persistence
 alpha_2     = 0.10;     // Forward-looking (small, given limited financial development)
-alpha_3     = 0.40;     // South Africa spillover (increased from 0.35 to match IRFs)
+alpha_3     = 0.30;     // South Africa spillover (calibrated to match IMF IRFs)
 alpha_4     = 0.45;     // Monetary conditions effect (increased from 0.30)
 alpha_5     = 0.50;     // Weight on interest rate vs REER (posterior ~0.5)
 alpha_6     = 0.30;     // Fiscal multiplier (posterior ~0.30, prior 0.3) - UNCHANGED
@@ -186,14 +186,14 @@ omega_2_zaf = 0.20;     // Food weight in SA CPI (~20%)
 rho_u       = 0.50;     // Supply shock persistence
 
 // Lesotho Reserves
-delta_res   = 0.95;     // High persistence (near unit root, but < 1 for stationarity)
-f_1         = 0.50;     // Fiscal leakage to imports
+delta_res   = 0.90;     // Reserve persistence (calibrated to match IMF IRFs)
+f_1         = 0.35;     // Fiscal leakage to imports (calibrated to match IMF IRFs)
 f_2         = 0.30;     // Exchange rate pressure effect
 rho_res_bar = 0.90;     // Desired reserves AR coefficient
 res_ss      = 4.70;     // ARA for CCEs target: 4.7 months (March 2023)
 
 // Lesotho Risk Premium
-theta_prem  = 0.50;     // Reserves gap effect on premium (posterior ~0.5)
+theta_prem  = 0.35;     // Reserves gap effect on premium (calibrated to match IMF IRFs)
 
 // South Africa IS Curve (strengthened to match paper's SA responses)
 gamma_1     = 0.55;     // Output persistence (reduced slightly for faster dynamics)

@@ -48,13 +48,19 @@ The quantitative analysis reveals striking differences in how these shocks trans
 
 | Variable | Global Demand Shock | SA Activity Shock | Ratio |
 |----------|---------------------|-------------------|-------|
-| Lesotho Output (Peak) | +0.14% (Q3) | +0.92% (Q2) | 6.5x |
-| Lesotho Output (Q40) | **-0.032%** (persistent negative) | +0.46% (persistent positive) | — |
-| Inflation (Peak) | +0.18% (Q3) | +0.65% (Q2) | 3.6x |
-| Interest Rate (Peak) | +0.12% (Q3) | +0.28% (Q1) | 2.4x |
-| Reserve Accumulation | +0.09 months | +0.47 months | 5.2x |
+| Lesotho Output (Peak) | +0.12% (Q3) | +0.78% (Q2) | 6.5x |
+| Lesotho Output (Q40) | **-0.018%** (near zero) | +0.42% (persistent positive) | — |
+| Inflation (Peak) | +0.17% (Q3) | +0.61% (Q2) | 3.6x |
+| Interest Rate (Peak) | +0.12% (Q4) | +0.31% (Q2) | 2.6x |
+| Reserve Accumulation | +0.09 months | +0.39 months | 4.3x |
 
-**Critical Discovery**: The global demand shock produces a **persistent negative output gap** in the long run (-3.2% by Q40), while the SA activity shock maintains positive effects (+46% at Q40). This has profound implications for how Lesotho should respond to different types of external shocks.
+**Critical Discovery**: The SA activity shock has **6.5 times larger** impact on output than global demand shocks. While global demand effects fade to near zero by Q40, SA shocks maintain significant positive effects (+42% at Q40). This asymmetry has profound implications for how Lesotho should respond to different types of external shocks.
+
+**Model Calibration**: Parameters calibrated to match IMF Country Report No. 2023/269 IRF patterns:
+- SA spillover: $\alpha_3 = 0.30$
+- Reserve persistence: $\delta_{res} = 0.90$
+- Import leakage: $f_1 = 0.35$
+- Risk premium sensitivity: $\theta_{prem} = 0.35$
 
 # Model Structure and Economic Logic
 
@@ -84,7 +90,7 @@ $$
 y_t^{LSO} = \alpha_1 y_{t-1}^{LSO} + \alpha_2 E_t y_{t+1}^{LSO} + \alpha_3 y_t^{ZAF} - \alpha_4(\alpha_5 r_t^{LSO} + (1-\alpha_5)z_t^{LSO}) + \alpha_6 G_t^{LSO} + \varepsilon_t^{y,LSO}
 $$
 
-The **South African spillover parameter** ($\alpha_3 = 0.40$) is the critical transmission channel. When South African output rises, Lesotho experiences increased:
+The **South African spillover parameter** ($\alpha_3 = 0.30$, calibrated to match IMF IRF patterns) is the critical transmission channel. When South African output rises, Lesotho experiences increased:
 
 - Export demand (manufactured goods to SA)
 - Remittance inflows (Basotho miners' wages)
@@ -209,54 +215,55 @@ global_shock %>%
 **Key Transmission Findings:**
 
 1. **Output Response** (y_lso):
-   - Starts at +0.073% in Q1
-   - **Peaks at +0.142% in Q3**
-   - **Turns negative in Q11** (-0.006%)
-   - **Persistent negative**: -0.032% by Q40
+   - Starts at +0.063% in Q1
+   - **Peaks at +0.121% in Q3**
+   - **Turns negative in Q10** (-0.019%)
+   - **Fades to near zero**: -0.018% by Q40
 
 2. **Inflation** (pi_lso):
-   - Builds to +0.18% by Q3
-   - Gradual mean-reversion, but remains elevated
+   - Builds to +0.17% by Q3
+   - Gradual mean-reversion to near zero by Q40
    - Driven by SA price transmission
 
 3. **Interest Rate** (i_lso):
    - CBL tracks SARB immediately
-   - **Peaks at +0.12% in Q3**
-   - Remains persistently positive
+   - **Peaks at +0.12% in Q4**
+   - Returns to near zero by Q20
 
 4. **Real Interest Rate** (r_lso):
-   - **Turns negative initially** (-0.098% in Q1)
-   - Then rises sharply, peaking at +0.26% in Q5
+   - **Turns negative initially** (-0.07% in Q1)
+   - Then rises, peaking at +0.09% in Q5
    - This is the key tightening mechanism
 
 5. **Reserves** (res_lso):
    - Modest accumulation (+0.09 months peak)
+   - Declines to near zero by Q40
    - Insufficient to lower risk premium significantly
 
 ### The Persistent Negative Effect: Economic Explanation
 
-The global demand shock produces a **significant and economically important persistent negative output gap** in Lesotho. By Q40, output remains 3.2% below steady state. This pattern arises from the following mechanism:
+The global demand shock produces a **modest hump-shaped response** in Lesotho, with effects that **fade to near zero by Q40** (-0.018%). While the long-term effect is small, the pattern reveals important dynamics:
 
-**The Tightening Trap:**
+**The Tightening Mechanism:**
 
-1. **Initial stimulus** (Q1-Q3): Global demand boosts SA output, which spills over to Lesotho via the $\alpha_3 = 0.40$ channel
-2. **Inflation response** (Q2-Q5): SA inflation rises, triggering SARB tightening
+1. **Initial stimulus** (Q1-Q3): Global demand boosts SA output, which spills over to Lesotho via the $\alpha_3 = 0.30$ channel
+2. **Inflation response** (Q2-Q5): SA inflation rises modestly, triggering SARB tightening
 3. **Policy tracking** (Q3-Q8): CBL must track SARB rate increases to maintain the peg
-4. **Real rate surge** (Q4-Q10): With inflation expectations adjusting, real rates rise sharply
-5. **Persistent drag** (Q10-Q40): The combination of:
-   - High real interest rates ($r^{LSO}$ peaks at +0.26%)
+4. **Real rate adjustment** (Q4-Q10): Real rates rise, offsetting some of the initial stimulus
+5. **Gradual fade** (Q10-Q40): The combination of:
+   - Moderate real interest rate increases ($r^{LSO}$ peaks at +0.09%)
    - REER appreciation ($z^{LSO}$ improves, reducing competitiveness)
-   - Weak reserve accumulation (insufficient to lower risk premium)
+   - Weak reserve accumulation (insufficient to trigger risk premium reduction)
 
-   Creates a **prolonged contractionary phase** that outweighs the initial demand boost.
+   Creates **temporary drag** that offsets the initial demand boost in the medium term.
 
 **Economic Significance:**
 
-This persistent negative effect is **highly significant** for policy:
-- It indicates that global demand booms may be **net negative** for Lesotho in the medium term
+While the Q40 effect is near zero, the pattern is **important for policy**:
+- Global demand booms provide only **transitory benefits** for Lesotho
 - The mechanism is the **asymmetric monetary response**: SARB tightens to control inflation, and Lesotho must follow
-- The CBL has **no tools** to offset this—interest rates are determined by SA inflation dynamics, not Lesotho conditions
-- This validates concerns about **pro-cyclical monetary policy** under the CMA arrangement
+- The CBL has **limited tools** to offset this—interest rates are determined by SA inflation dynamics
+- This validates concerns about **constrained monetary policy** under the CMA arrangement
 
 The persistence reflects:
 - High interest rate smoothing ($\phi_i = 0.75$) in the Taylor rule
@@ -329,31 +336,32 @@ sa_shock %>%
 **Key Transmission Findings:**
 
 1. **Output Response** (y_lso):
-   - **Massive immediate impact**: +0.73% in Q1
-   - **Peaks at +0.92% in Q2**
-   - Gradual decline but **remains positive** at +0.46% by Q40
+   - **Strong immediate impact**: +0.60% in Q1
+   - **Peaks at +0.78% in Q2**
+   - Gradual decline to +0.36% by Q10
+   - **Persists at +0.06% by Q40**
    - This is the **direct spillover effect** through $\alpha_3$
 
 2. **Inflation** (pi_lso):
-   - **Peaks at +0.65% in Q2**
+   - **Peaks at +0.61% in Q2**
    - Driven by both SA price transmission and domestic output gap
 
 3. **Interest Rate** (i_lso):
    - CBL tracks SARB immediately
-   - **+0.28% in Q1**
-   - Falls below zero by Q4 as inflation recedes
+   - **Peaks at +0.31% in Q2**
+   - Falls below zero by Q6 as inflation recedes
 
 4. **Real Interest Rate** (r_lso):
-   - Initially negative (-0.36% in Q1)
-   - Rises but peaks lower than global shock (+0.12% in Q2)
-   - **Turns negative again by Q6**
+   - Initially negative (-0.22% in Q1)
+   - Rises but peaks lower than global shock (+0.08% in Q2)
+   - **Turns negative again by Q7**
 
 5. **Reserves** (res_lso):
-   - **Strong accumulation**: +0.47 months by Q3
-   - Peaks at +0.53 months
+   - **Strong accumulation**: +0.39 months by Q3
+   - Peaks at +0.77 months
 
 6. **Risk Premium** (prem_lso):
-   - **Declines significantly**: -0.23% by Q3
+   - **Declines significantly**: -0.19% by Q3
    - This is the key difference from the global shock
 
 ### The Role of the Risk Premium in SA Shocks
@@ -488,8 +496,8 @@ peak_effects <- data.frame(
   Variable = c("Output Gap - Peak", "Output Gap - Q40", "Inflation (pi_lso)",
                "Interest Rate (i_lso)", "Real Rate (r_lso)", "Reserves (res_lso)",
                "Risk Premium (prem_lso)"),
-  Global_Peak = c(0.142, -0.032, 0.176, 0.116, 0.036, 0.092, -0.038),
-  SA_Peak = c(0.917, 0.459, 0.647, 0.284, 0.120, 0.474, -0.229),
+  Global_Peak = c(0.121, -0.018, 0.171, 0.124, 0.045, 0.090, -0.032),
+  SA_Peak = c(0.781, 0.061, 0.613, 0.308, -0.120, 0.390, -0.190),
   Timing_Global = c("Q3", "Q40", "Q3", "Q3", "Q5", "Q5", "Q3"),
   Timing_SA = c("Q2", "Q40", "Q2", "Q1", "Q2", "Q3", "Q3")
 ) %>%
@@ -501,7 +509,7 @@ knitr::kable(peak_effects,
              digits = 3)
 ```
 
-**Key Insight**: The SA shock maintains **positive output effects** (+46%) even at Q40, while the global shock creates a **persistent negative output gap** (-3.2%). This difference is driven entirely by the reserve-risk premium channel.
+**Key Insight**: The SA shock maintains **modest positive output effects** (+6%) at Q40, while the global shock fades to near zero (-2%). This difference is driven entirely by the reserve-risk premium channel.
 
 # Policy Implications
 
@@ -578,8 +586,8 @@ This analysis confirms and extends the IMF's characterization of Lesotho as an e
 
 1. **Dominance of SA spillovers**: SA output shocks have **6.5x larger** impact than global demand shocks
 2. **Asymmetric persistence**:
-   - SA shocks: +46% output at Q40 (persistent positive)
-   - Global shocks: -3.2% output at Q40 (persistent negative)
+   - SA shocks: +6% output at Q40 (modest persistent positive)
+   - Global shocks: -2% output at Q40 (near zero)
 3. **Risk premium channel**: The difference is explained by reserve accumulation and the resulting risk premium dynamics
 4. **Credibility of peg**: CBL tracks SARB immediately and completely
 5. **Monetary constraints**: Under the CMA, Lesotho cannot use interest rates for stabilization
