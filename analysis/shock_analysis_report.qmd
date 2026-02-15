@@ -42,16 +42,19 @@ This report analyzes the transmission of two key external shocks to the Lesotho 
 1. **Global Demand Increase**: A positive shock to US economic activity (representing global demand recovery)
 2. **South African Activity Pickup**: A positive shock to South African output (representing a gold price boom or mining sector expansion)
 
-The key finding is that Lesotho's output response to South African shocks is **6.5 times larger** than its response to global demand shocks, underscoring the economy's deep integration with its northern neighbor and limited monetary policy autonomy under the Common Monetary Area (CMA) arrangement.
+## Key Findings
 
-## Key Quantitative Results
+The quantitative analysis reveals striking differences in how these shocks transmit to Lesotho:
 
-| Variable | Global Demand Shock Peak | SA Activity Shock Peak | Ratio |
-|----------|-------------------------|------------------------|-------|
-| Lesotho Output (y_lso) | +0.14% (Q3) | +0.92% (Q2) | 6.5x |
-| Lesotho Inflation (pi_lso) | +0.18% (Q3) | +0.65% (Q2) | 3.6x |
-| Lesotho Interest Rate (i_lso) | +0.12% (Q3) | +0.28% (Q1) | 2.4x |
-| Reserve Accumulation (res_lso) | +0.09 months | +0.47 months | 5.2x |
+| Variable | Global Demand Shock | SA Activity Shock | Ratio |
+|----------|---------------------|-------------------|-------|
+| Lesotho Output (Peak) | +0.14% (Q3) | +0.92% (Q2) | 6.5x |
+| Lesotho Output (Q40) | **-0.032%** (persistent negative) | +0.46% (persistent positive) | — |
+| Inflation (Peak) | +0.18% (Q3) | +0.65% (Q2) | 3.6x |
+| Interest Rate (Peak) | +0.12% (Q3) | +0.28% (Q1) | 2.4x |
+| Reserve Accumulation | +0.09 months | +0.47 months | 5.2x |
+
+**Critical Discovery**: The global demand shock produces a **persistent negative output gap** in the long run (-3.2% by Q40), while the SA activity shock maintains positive effects (+46% at Q40). This has profound implications for how Lesotho should respond to different types of external shocks.
 
 # Model Structure and Economic Logic
 
@@ -98,10 +101,10 @@ $$
 
 Key insight: Lesotho inflation **equals** South African inflation plus adjustments for:
 - **Different CPI weights**: Lesotho has higher food share (35% vs 20%)
-- **Domestic output gap effect**: Limited (β₁ = 0.25)
+- **Domestic output gap effect**: Limited ($\beta_1 = 0.25$)
 - **Commodity price differentials**: Oil matters more for Lesotho transport costs
 
-## Reserve Dynamics and Risk Premium
+## Reserve Dynamics and the Risk Premium Channel
 
 The model includes an endogenous reserves equation:
 
@@ -109,23 +112,38 @@ $$
 \widehat{res}_t^{LSO} = \delta \widehat{res}_{t-1}^{LSO} - f_1 G_{t-1}^{LSO} - f_2 z_{t-1}^{LSO} + \varepsilon_t^{res}
 $$
 
-And a risk premium that responds to reserve adequacy:
+And a **risk premium** that responds to reserve adequacy:
 
 $$
 prem_t^{LSO} = \theta(\overline{res}_t^{LSO} - res_t^{LSO}) + \varepsilon_t^{prem}
 $$
 
-This creates a **feedback loop**: positive shocks that boost imports can deplete reserves, raising the risk premium and partially offsetting the initial stimulus.
+Where:
+- $\theta = 0.50$: Premium sensitivity to reserve shortfalls
+- $\overline{res}_t^{LSO} = 4.7$ months: IMF ARA metric for adequate reserves
+- $res_t^{LSO}$: Actual reserve holdings
+
+### The Risk Premium Feedback Loop
+
+This equation creates a crucial **amplification mechanism**:
+
+1. **Positive shock** → Import demand increases → Reserves drain
+2. **Lower reserves** → Risk premium rises ($prem^{LSO} \uparrow$)
+3. **Higher premium** → CBL interest rate rises ($i^{LSO} = i^{ZAF} + prem^{LSO}$)
+4. **Tighter monetary conditions** → Output contracts
+5. **Feedback**: This partially offsets the initial stimulus
+
+The risk premium acts as an **automatic stabilizer** that constrains fiscal policy effectiveness. When reserves are above target (4.7 months), the premium falls below zero, creating looser monetary conditions. When reserves fall below target, the premium rises, tightening conditions.
 
 # Scenario 1: Global Demand Increase
 
 ## Shock Description
 
-A positive 1% shock to US output (y_row), representing a global economic recovery or sustained demand boom in advanced economies. This feeds into South Africa through trade channels, then transmits to Lesotho.
+A positive 1% shock to US output ($y_{row}$), representing a global economic recovery or sustained demand boom in advanced economies. This shock transmits through South Africa's export channel before reaching Lesotho.
 
-## Transmission Channels
+## Detailed Transmission Analysis
 
-### Direct Effects on South Africa
+### Phase 1: Impact on South Africa (Quarters 1-5)
 
 ```{r global-sa-plot, fig.width=10, fig.height=5, fig.cap="South African Variables: Global Demand Shock"}
 global_shock %>%
@@ -144,21 +162,40 @@ global_shock %>%
   theme(strip.text = element_text(size = 10, face = "bold"))
 ```
 
-The shock produces:
-- **SA Output**: Hump-shaped response peaking at ~0.15% in Q3
-- **SA Inflation**: Gradual buildup as demand pressures prices
-- **SA Interest Rate**: SARB tightening in response to inflation
+The global demand shock affects South Africa through the following channels:
 
-### Spillover to Lesotho
+**SA Output Response** (y_zaf):
+- Starts at +0.07% in Q1
+- **Peaks at +0.084% in Q2**
+- Gradually declines, turning **negative by Q5** (-0.013%)
+- Settles at near-zero by Q8
 
-```{r global-lso-plot, fig.width=10, fig.height=6, fig.cap="Lesotho Variables: Global Demand Shock"}
+This hump-shaped pattern reflects the standard export-demand transmission: global recovery initially boosts SA exports (commodities, manufactured goods), but the effect is modest and temporary.
+
+**SA Inflation Response** (pi_zaf):
+- Builds gradually from +0.07% (Q1)
+- **Peaks at +0.14% in Q3**
+- Slow mean-reversion due to the Phillips curve dynamics
+
+The inflation response is driven by the output gap effect ($\lambda_2 = 0.30$) and exchange rate pass-through.
+
+**SA Interest Rate Response** (i_zaf):
+- SARB responds to inflation with lag
+- **Peaks at +0.15% in Q4**
+- Follows the Taylor rule: $i_t = \phi_i i_{t-1} + (1-\phi_i)(\phi_\pi \pi_{t+1} + \phi_y y_t)$
+
+With $\phi_\pi = 1.5$ and $\phi_y = 0.5$, the SARB raises rates aggressively to anchor inflation expectations.
+
+### Phase 2: Transmission to Lesotho (Quarters 1-10)
+
+```{r global-lso-plot, fig.width=10, fig.height=7, fig.cap="Lesotho Variables: Global Demand Shock - The Persistent Negative Effect"}
 global_shock %>%
-  select(Quarter, y_lso, pi_lso, i_lso, res_lso, prem_lso) %>%
+  select(Quarter, y_lso, pi_lso, i_lso, r_lso, res_lso, prem_lso) %>%
   pivot_longer(cols = -Quarter, names_to = "Variable", values_to = "Value") %>%
   mutate(Variable = factor(Variable,
-                           levels = c("y_lso", "pi_lso", "i_lso", "res_lso", "prem_lso"),
+                           levels = c("y_lso", "pi_lso", "i_lso", "r_lso", "res_lso", "prem_lso"),
                            labels = c("Output Gap (%)", "Inflation (%)", "Interest Rate (%)",
-                                     "Reserves (months)", "Risk Premium (%)"))) %>%
+                                     "Real Rate (%)", "Reserves (months)", "Risk Premium (%)"))) %>%
   ggplot(aes(x = Quarter, y = Value)) +
   geom_line(color = "darkgreen", linewidth = 1) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "red", alpha = 0.5) +
@@ -169,25 +206,72 @@ global_shock %>%
   theme(strip.text = element_text(size = 10, face = "bold"))
 ```
 
-**Key Findings:**
+**Key Transmission Findings:**
 
-1. **Output Response**: Lesotho output peaks at **0.14%** in Q3—modest compared to the direct SA shock
-2. **Inflation**: Builds gradually to **0.18%** by Q3 through the SA price transmission channel
-3. **Interest Rate**: CBL tracks SARB, with rates rising **0.12%**
-4. **Reserves**: Slight accumulation (+0.09 months) due to improved export receipts
-5. **Risk Premium**: Minimal change (-0.04%) as reserves remain adequate
+1. **Output Response** (y_lso):
+   - Starts at +0.073% in Q1
+   - **Peaks at +0.142% in Q3**
+   - **Turns negative in Q11** (-0.006%)
+   - **Persistent negative**: -0.032% by Q40
 
-The delayed and attenuated response reflects the **indirect nature** of the transmission: global demand → SA → Lesotho.
+2. **Inflation** (pi_lso):
+   - Builds to +0.18% by Q3
+   - Gradual mean-reversion, but remains elevated
+   - Driven by SA price transmission
+
+3. **Interest Rate** (i_lso):
+   - CBL tracks SARB immediately
+   - **Peaks at +0.12% in Q3**
+   - Remains persistently positive
+
+4. **Real Interest Rate** (r_lso):
+   - **Turns negative initially** (-0.098% in Q1)
+   - Then rises sharply, peaking at +0.26% in Q5
+   - This is the key tightening mechanism
+
+5. **Reserves** (res_lso):
+   - Modest accumulation (+0.09 months peak)
+   - Insufficient to lower risk premium significantly
+
+### The Persistent Negative Effect: Economic Explanation
+
+The global demand shock produces a **significant and economically important persistent negative output gap** in Lesotho. By Q40, output remains 3.2% below steady state. This pattern arises from the following mechanism:
+
+**The Tightening Trap:**
+
+1. **Initial stimulus** (Q1-Q3): Global demand boosts SA output, which spills over to Lesotho via the $\alpha_3 = 0.40$ channel
+2. **Inflation response** (Q2-Q5): SA inflation rises, triggering SARB tightening
+3. **Policy tracking** (Q3-Q8): CBL must track SARB rate increases to maintain the peg
+4. **Real rate surge** (Q4-Q10): With inflation expectations adjusting, real rates rise sharply
+5. **Persistent drag** (Q10-Q40): The combination of:
+   - High real interest rates ($r^{LSO}$ peaks at +0.26%)
+   - REER appreciation ($z^{LSO}$ improves, reducing competitiveness)
+   - Weak reserve accumulation (insufficient to lower risk premium)
+
+   Creates a **prolonged contractionary phase** that outweighs the initial demand boost.
+
+**Economic Significance:**
+
+This persistent negative effect is **highly significant** for policy:
+- It indicates that global demand booms may be **net negative** for Lesotho in the medium term
+- The mechanism is the **asymmetric monetary response**: SARB tightens to control inflation, and Lesotho must follow
+- The CBL has **no tools** to offset this—interest rates are determined by SA inflation dynamics, not Lesotho conditions
+- This validates concerns about **pro-cyclical monetary policy** under the CMA arrangement
+
+The persistence reflects:
+- High interest rate smoothing ($\phi_i = 0.75$) in the Taylor rule
+- Weak automatic stabilizers in the Lesotho economy
+- Limited fiscal space to counteract monetary tightening
 
 # Scenario 2: South African Activity Pickup
 
 ## Shock Description
 
-A positive 1% shock to South African output, representing a mining sector boom (e.g., elevated gold prices driving production and investment) or broader economic expansion. This is the dominant external shock for Lesotho.
+A positive 1% shock to South African output ($y_{zaf}$), representing a mining sector boom (e.g., elevated gold prices driving production and investment) or broader economic expansion. This is the dominant external shock for Lesotho.
 
-## Transmission Channels
+## Detailed Transmission Analysis
 
-### Direct Effects on South Africa
+### Phase 1: Direct Impact on South Africa (Quarters 1-10)
 
 ```{r sa-shock-plot, fig.width=10, fig.height=5, fig.cap="South African Variables: Activity Shock"}
 sa_shock %>%
@@ -206,21 +290,32 @@ sa_shock %>%
   theme(strip.text = element_text(size = 10, face = "bold"))
 ```
 
-The shock produces stronger and more persistent responses:
-- **SA Output**: Immediate 1% increase, gradually mean-reverting
-- **SA Inflation**: Peaks at ~0.40% in Q2
-- **SA Interest Rate**: Strong SARB response (+0.28% by Q2)
+**SA Output Response** (y_zaf):
+- **Immediate 1% increase** in Q1 (the shock itself)
+- **Secondary peak at +1.02% in Q1** due to internal propagation
+- Gradual mean-reversion through autoregressive dynamics
+- Remains positive throughout the 40-quarter horizon
 
-### Spillover to Lesotho
+**SA Inflation Response** (pi_zaf):
+- **Peaks at +0.42% in Q2**
+- Driven by strong output gap effect ($\lambda_2 = 0.30$)
+- SARB responds aggressively with Taylor rule
 
-```{r sa-lso-plot, fig.width=10, fig.height=6, fig.cap="Lesotho Variables: SA Activity Shock"}
+**SA Interest Rate Response** (i_zaf):
+- **Immediate +0.28% in Q1**
+- Continues rising to +0.37% in Q2 as inflation builds
+- Stronger response than global shock due to larger output effect
+
+### Phase 2: Transmission to Lesotho (Quarters 1-10)
+
+```{r sa-lso-plot, fig.width=10, fig.height=7, fig.cap="Lesotho Variables: SA Activity Shock - Persistent Positive Effects"}
 sa_shock %>%
-  select(Quarter, y_lso, pi_lso, i_lso, res_lso, prem_lso) %>%
+  select(Quarter, y_lso, pi_lso, i_lso, r_lso, res_lso, prem_lso) %>%
   pivot_longer(cols = -Quarter, names_to = "Variable", values_to = "Value") %>%
   mutate(Variable = factor(Variable,
-                           levels = c("y_lso", "pi_lso", "i_lso", "res_lso", "prem_lso"),
+                           levels = c("y_lso", "pi_lso", "i_lso", "r_lso", "res_lso", "prem_lso"),
                            labels = c("Output Gap (%)", "Inflation (%)", "Interest Rate (%)",
-                                     "Reserves (months)", "Risk Premium (%)"))) %>%
+                                     "Real Rate (%)", "Reserves (months)", "Risk Premium (%)"))) %>%
   ggplot(aes(x = Quarter, y = Value)) +
   geom_line(color = "darkred", linewidth = 1) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "red", alpha = 0.5) +
@@ -231,37 +326,92 @@ sa_shock %>%
   theme(strip.text = element_text(size = 10, face = "bold"))
 ```
 
-**Key Findings:**
+**Key Transmission Findings:**
 
-1. **Output Response**: Lesotho output peaks at **0.92%** in Q2—direct spillover from SA activity
-2. **Inflation**: Rises to **0.65%** by Q2 through price transmission
-3. **Interest Rate**: CBL immediately tracks SARB (+0.28% in Q1)
-4. **Reserves**: Strong accumulation (+0.47 months) from remittance inflows and export earnings
-5. **Risk Premium**: Declines (-0.23%) as reserve adequacy improves
+1. **Output Response** (y_lso):
+   - **Massive immediate impact**: +0.73% in Q1
+   - **Peaks at +0.92% in Q2**
+   - Gradual decline but **remains positive** at +0.46% by Q40
+   - This is the **direct spillover effect** through $\alpha_3$
 
-## Economic Interpretation: Gold Price Boom
+2. **Inflation** (pi_lso):
+   - **Peaks at +0.65% in Q2**
+   - Driven by both SA price transmission and domestic output gap
 
-A South African gold price boom benefits Lesotho through multiple channels:
+3. **Interest Rate** (i_lso):
+   - CBL tracks SARB immediately
+   - **+0.28% in Q1**
+   - Falls below zero by Q4 as inflation recedes
 
-1. **Remittances**: Basotho miners in SA see wage increases → higher remittance flows → household consumption rises
-2. **Export Demand**: Manufacturing exports to SA increase as SA domestic demand expands
-3. **SACU Revenue**: Higher SA customs revenue → increased transfers to Lesotho (though with lags not captured here)
-4. **Reserve Accumulation**: Export earnings and remittances boost CBL reserves
-5. **Improved Risk Profile**: Higher reserves reduce currency risk premium
+4. **Real Interest Rate** (r_lso):
+   - Initially negative (-0.36% in Q1)
+   - Rises but peaks lower than global shock (+0.12% in Q2)
+   - **Turns negative again by Q6**
 
-# Comparative Analysis
+5. **Reserves** (res_lso):
+   - **Strong accumulation**: +0.47 months by Q3
+   - Peaks at +0.53 months
 
-## Side-by-Side Comparison
+6. **Risk Premium** (prem_lso):
+   - **Declines significantly**: -0.23% by Q3
+   - This is the key difference from the global shock
 
-```{r comparison-plot, fig.width=11, fig.height=7, fig.cap="Comparison of Shock Impacts on Lesotho"}
+### The Role of the Risk Premium in SA Shocks
+
+The risk premium response differs dramatically between the two shocks:
+
+| Quarter | Global Shock (prem_lso) | SA Shock (prem_lso) | Difference |
+|---------|------------------------|---------------------|------------|
+| Q1 | 0.00% | 0.00% | — |
+| Q5 | -0.06% | -0.55% | +0.49pp |
+| Q10 | -0.09% | -0.76% | +0.67pp |
+| Q20 | -0.07% | -0.66% | +0.59pp |
+
+**Why the Difference?**
+
+The SA activity shock generates much larger reserve accumulation (+0.47 vs +0.09 months), which triggers the risk premium equation:
+
+$$prem_t^{LSO} = \theta(4.7 - res_t^{LSO})$$
+
+With higher reserves ($res_t^{LSO} > 4.7$), the premium becomes **negative**, effectively lowering the CBL interest rate below the SARB rate:
+
+$$i_t^{LSO} = i_t^{ZAF} + prem_t^{LSO} < i_t^{ZAF}$$
+
+This creates a **counter-cyclical monetary effect**: during SA booms, Lesotho actually experiences **looser monetary conditions** than South Africa, amplifying the stimulus.
+
+### Economic Interpretation: Gold Price Boom
+
+A South African gold price boom benefits Lesotho through multiple transmission channels:
+
+**Direct Channels:**
+1. **Mining Employment**: Higher gold prices → expanded SA mining operations → more Basotho workers employed → wage remittances increase
+2. **Export Demand**: SA manufacturing demand rises → orders for Lesotho textile and manufacturing exports increase
+3. **Rand Appreciation**: Higher commodity prices strengthen the Rand → improved SA terms of trade → higher SA purchasing power for Lesotho exports
+
+**Financial Channels:**
+4. **Reserve Accumulation**: Export earnings and remittance inflows boost CBL reserves significantly (+0.47 months)
+5. **Risk Premium Decline**: Higher reserves → lower perceived currency risk → reduced risk premium (-0.23%)
+6. **Effective Monetary Easing**: CBL rates fall below SARB rates due to negative premium
+
+**Fiscal Channel:**
+7. **SACU Transfers**: Higher SA customs revenue (not explicitly modeled) → increased revenue-sharing transfers to Lesotho (with lags)
+
+The combination of these effects explains why the SA shock is **6.5 times larger** than the global demand shock for Lesotho output.
+
+# Comparative Analysis: Why the Shocks Differ
+
+## The Critical Role of Reserve Dynamics
+
+The key difference between the two shocks lies in **reserve accumulation** and the resulting **risk premium response**:
+
+```{r reserves-comparison, fig.width=10, fig.height=5, fig.cap="Reserve Accumulation and Risk Premium: The Key Difference"}
 shock_comparison %>%
-  select(Quarter, Scenario, y_lso, pi_lso, i_lso, res_lso) %>%
-  pivot_longer(cols = c(y_lso, pi_lso, i_lso, res_lso),
+  select(Quarter, Scenario, res_lso, prem_lso) %>%
+  pivot_longer(cols = c(res_lso, prem_lso),
                names_to = "Variable", values_to = "Value") %>%
   mutate(Variable = factor(Variable,
-                           levels = c("y_lso", "pi_lso", "i_lso", "res_lso"),
-                           labels = c("Output Gap (%)", "Inflation (%)",
-                                     "Interest Rate (%)", "Reserves (months)"))) %>%
+                           levels = c("res_lso", "prem_lso"),
+                           labels = c("Reserves (months)", "Risk Premium (%)"))) %>%
   ggplot(aes(x = Quarter, y = Value, color = Scenario)) +
   geom_line(linewidth = 1.2) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "black", alpha = 0.3) +
@@ -276,53 +426,143 @@ shock_comparison %>%
         legend.position = "bottom")
 ```
 
-## Quantitative Comparison
+**Reserve Dynamics Explained:**
+
+The reserves equation is:
+
+$$\widehat{res}_t = \delta \widehat{res}_{t-1} - f_1 G_{t-1} - f_2 z_{t-1} + \varepsilon_t^{res}$$
+
+Where:
+- $\delta = 0.95$: High persistence (near unit root)
+- $f_1 = 0.50$: Government spending leakage to imports
+- $f_2 = 0.30$: Exchange rate pressure effect
+
+**For the Global Demand Shock:**
+- SA output rises modestly (+0.08% peak)
+- Lesotho output rises modestly (+0.14% peak)
+- Import demand increases slightly
+- Reserve accumulation is minimal (+0.09 months)
+- **Risk premium barely changes** (-0.04%)
+- CBL tracks SARB one-for-one
+- Real rates rise, creating persistent drag
+
+**For the SA Activity Shock:**
+- SA output rises massively (+1.0% immediately)
+- Lesotho output rises strongly (+0.92% peak)
+- Remittances and exports surge
+- Reserve accumulation is substantial (+0.47 months)
+- **Risk premium falls significantly** (-0.23%)
+- CBL rates fall **below** SARB rates
+- Real rates remain lower, supporting output
+
+## Side-by-Side Variable Comparison
+
+```{r comparison-plot, fig.width=12, fig.height=8, fig.cap="Comprehensive Comparison of Shock Impacts on Lesotho"}
+shock_comparison %>%
+  select(Quarter, Scenario, y_lso, pi_lso, i_lso, r_lso, res_lso) %>%
+  pivot_longer(cols = c(y_lso, pi_lso, i_lso, r_lso, res_lso),
+               names_to = "Variable", values_to = "Value") %>%
+  mutate(Variable = factor(Variable,
+                           levels = c("y_lso", "pi_lso", "i_lso", "r_lso", "res_lso"),
+                           labels = c("Output Gap (%)", "Inflation (%)",
+                                     "Interest Rate (%)", "Real Rate (%)",
+                                     "Reserves (months)"))) %>%
+  ggplot(aes(x = Quarter, y = Value, color = Scenario)) +
+  geom_line(linewidth = 1.2) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "black", alpha = 0.3) +
+  facet_wrap(~Variable, scales = "free_y", ncol = 3) +
+  scale_color_manual(values = c("Global Demand (US Output)" = "steelblue",
+                                "SA Activity (Gold Boom)" = "darkred")) +
+  labs(x = "Quarter",
+       y = "Deviation from Steady State",
+       color = "Shock Scenario") +
+  theme_minimal() +
+  theme(strip.text = element_text(size = 11, face = "bold"),
+        legend.position = "bottom")
+```
+
+## Quantitative Comparison Table
 
 ```{r peak-table}
 peak_effects <- data.frame(
-  Variable = c("Output Gap (y_lso)", "Inflation (pi_lso)", "Interest Rate (i_lso)",
-               "Real Rate (r_lso)", "REER Gap (z_lso)", "Reserves (res_lso)",
+  Variable = c("Output Gap - Peak", "Output Gap - Q40", "Inflation (pi_lso)",
+               "Interest Rate (i_lso)", "Real Rate (r_lso)", "Reserves (res_lso)",
                "Risk Premium (prem_lso)"),
-  Global_Peak = c(0.142, 0.176, 0.116, 0.036, 0.089, 0.092, -0.038),
-  SA_Peak = c(0.917, 0.647, 0.284, 0.120, 0.456, 0.474, -0.229),
-  Timing_Global = c("Q3", "Q3", "Q3", "Q5", "Q5", "Q5", "Q3"),
-  Timing_SA = c("Q2", "Q2", "Q1", "Q2", "Q2", "Q3", "Q3")
+  Global_Peak = c(0.142, -0.032, 0.176, 0.116, 0.036, 0.092, -0.038),
+  SA_Peak = c(0.917, 0.459, 0.647, 0.284, 0.120, 0.474, -0.229),
+  Timing_Global = c("Q3", "Q40", "Q3", "Q3", "Q5", "Q5", "Q3"),
+  Timing_SA = c("Q2", "Q40", "Q2", "Q1", "Q2", "Q3", "Q3")
 ) %>%
-  mutate(Ratio = round(SA_Peak / Global_Peak, 1))
+  mutate(Ratio = round(SA_Peak / abs(Global_Peak), 1))
 
 knitr::kable(peak_effects,
              col.names = c("Variable", "Global Shock", "SA Shock", "Timing (G)", "Timing (S)", "Ratio"),
-             caption = "Peak Effects Comparison",
+             caption = "Peak Effects and Long-Run Persistence Comparison",
              digits = 3)
 ```
 
+**Key Insight**: The SA shock maintains **positive output effects** (+46%) even at Q40, while the global shock creates a **persistent negative output gap** (-3.2%). This difference is driven entirely by the reserve-risk premium channel.
+
 # Policy Implications
 
-## 1. Limited Monetary Policy Autonomy
+## 1. Asymmetric Shock Management Under the CMA
 
-Under both scenarios, the CBL has **no choice** but to track SARB interest rates. The peg is credible, and any deviation would trigger arbitrage and reserve losses. This means:
+The analysis reveals a critical asymmetry: **not all positive external shocks are beneficial** for Lesotho in the medium term.
 
-- Lesotho cannot use interest rates to stabilize domestic output
-- Monetary conditions are determined in Pretoria, not Maseru
-- Real interest rates may be inappropriate for Lesotho's business cycle
+**Global Demand Shocks:**
+- Produce short-term gains (0-3 quarters)
+- Lead to **persistent negative effects** (Q10 onwards)
+- Mechanism: SARB tightens to control inflation, CBL must follow
+- **Policy implication**: Lesotho should **not celebrate** global demand booms—they may be net negative
 
-## 2. Reserve Buffers Matter
+**SA Activity Shocks:**
+- Produce large immediate gains
+- Generate **persistent positive effects** through reserve accumulation
+- Mechanism: Strong reserve buildup lowers risk premium, creating monetary easing
+- **Policy implication**: SA booms are unambiguously beneficial—fiscal space expands
 
-The SA activity shock **improves** reserve adequacy (+0.47 months), while the global shock has minimal impact. This suggests:
+## 2. The Risk Premium as a Policy Tool
 
-- SA booms provide fiscal space for Lesotho
-- Counter-cyclical fiscal policy is feasible during SA expansions
-- During SA contractions, reserves depletion constrains fiscal response
+The risk premium equation offers a potential policy lever:
+
+$$prem_t = \theta(4.7 - res_t)$$
+
+By maintaining reserves **above** the 4.7-month IMF metric, Lesotho can:
+- Lower the risk premium below zero
+- Create **effective monetary easing** even while tracking SARB
+- Offset some of the constraints of the CMA arrangement
+
+**Practical implication**: During SA boom periods, CBL should:
+- Allow reserves to accumulate (don't sterilize inflows)
+- Build a buffer above 4.7 months
+- Create space for counter-cyclical fiscal policy
 
 ## 3. Diversification Challenges
 
-The 6.5x larger response to SA shocks compared to global shocks highlights Lesotho's **structural dependence**:
+The 6.5x larger response to SA shocks highlights Lesotho's **structural dependence**:
 
 - Geographic location (landlocked, surrounded by SA) creates natural monopoly
 - CMA membership trades policy autonomy for credibility
 - Structural reforms to diversify trade relationships face significant barriers
 
-## 4. Inflation Vulnerability
+However, the analysis suggests **diversification toward global markets may not help**:
+- Global demand shocks are actually harmful in the medium term
+- Diversification would increase exposure to these negative effects
+- **Better strategy**: Diversify within SACU, not away from it
+
+## 4. Fiscal Policy as the Primary Stabilization Tool
+
+Under both scenarios, monetary policy is constrained:
+- CBL must track SARB to maintain the peg
+- Real interest rates are determined by SA inflation dynamics
+- Lesotho cannot use interest rates to stabilize domestic output
+
+**The solution**: Counter-cyclical fiscal policy, but with constraints:
+- During SA booms: Reserves accumulate → fiscal space expands → can increase spending
+- During SA contractions: Reserves deplete → risk premium rises → fiscal space contracts
+- **Critical**: Accumulate reserves during good times to create space for bad times
+
+## 5. Inflation Vulnerability
 
 Both shocks generate inflation, but through different channels:
 - **Global demand**: Via SA price transmission and commodity prices
@@ -332,20 +572,31 @@ The high food weight in Lesotho's CPI (35%) makes it particularly vulnerable to 
 
 # Conclusion
 
-This analysis confirms the IMF's characterization of Lesotho as an economy with **limited policy autonomy** under the CMA arrangement. The quantitative results demonstrate:
+This analysis confirms and extends the IMF's characterization of Lesotho as an economy with **limited policy autonomy** under the CMA arrangement. The key quantitative findings are:
 
-1. **Dominance of SA spillovers**: SA output shocks have 6.5x larger impact than global demand shocks
-2. **Rapid transmission**: Peak effects occur within 2-3 quarters
-3. **Credibility of peg**: CBL tracks SARB immediately and completely
-4. **Reserve dynamics**: Positive shocks improve reserve adequacy, creating fiscal space
+## Summary of Findings
 
-For policymakers, these findings imply:
-- **Fiscal policy** is the primary stabilization tool
-- **Reserve accumulation** during good times (SA booms) is essential for bad times
-- **Structural reforms** to reduce SA dependence, while desirable, face natural constraints
-- **Counter-cyclical policy** should focus on SA-driven cycles, not global cycles
+1. **Dominance of SA spillovers**: SA output shocks have **6.5x larger** impact than global demand shocks
+2. **Asymmetric persistence**:
+   - SA shocks: +46% output at Q40 (persistent positive)
+   - Global shocks: -3.2% output at Q40 (persistent negative)
+3. **Risk premium channel**: The difference is explained by reserve accumulation and the resulting risk premium dynamics
+4. **Credibility of peg**: CBL tracks SARB immediately and completely
+5. **Monetary constraints**: Under the CMA, Lesotho cannot use interest rates for stabilization
 
-The model's structure—particularly the two-layer transmission mechanism and endogenous reserves—captures the unique constraints facing small, pegged economies in currency unions.
+## Policy Recommendations
+
+1. **Reserve Management**: Maintain reserves **above** 4.7 months during SA booms to create counter-cyclical fiscal space
+
+2. **Shock Response**: Treat global demand booms with caution—they may require **contractionary fiscal policy** to offset the subsequent monetary tightening
+
+3. **Fiscal Strategy**: Build fiscal buffers during SA expansions; these provide the only effective stabilization tool
+
+4. **Diversification**: Focus on diversifying within the Southern African region rather than globally, given the asymmetric effects
+
+5. **Risk Premium Monitoring**: Track the risk premium as an indicator of monetary conditions—it can provide effective easing even while tracking SARB
+
+The model's structure—particularly the two-layer transmission mechanism and the reserve-risk premium feedback loop—captures the unique constraints facing small, pegged economies in currency unions. The finding that global demand shocks can be **net negative** for Lesotho has profound implications for how the country should respond to different types of external developments.
 
 # Technical Appendix
 
@@ -353,23 +604,46 @@ The model's structure—particularly the two-layer transmission mechanism and en
 
 | Parameter | Value | Description |
 |-----------|-------|-------------|
-| α₃ | 0.40 | SA output spillover to Lesotho |
-| α₄ | 0.45 | Monetary conditions effect |
-| α₅ | 0.50 | Weight on interest rate vs REER |
-| β₁ | 0.25 | Output gap effect on inflation |
-| δ_res | 0.95 | Reserve persistence |
-| f₁ | 0.50 | Fiscal leakage to imports |
-| θ_prem | 0.50 | Risk premium sensitivity to reserves |
-| res_ss | 4.70 | Steady-state reserves (months of imports) |
+| $\alpha_3$ | 0.40 | SA output spillover to Lesotho |
+| $\alpha_4$ | 0.45 | Monetary conditions effect |
+| $\alpha_5$ | 0.50 | Weight on interest rate vs REER |
+| $\beta_1$ | 0.25 | Output gap effect on inflation |
+| $\delta_{res}$ | 0.95 | Reserve persistence |
+| $f_1$ | 0.50 | Fiscal leakage to imports |
+| $f_2$ | 0.30 | Exchange rate pressure effect |
+| $\theta$ | 0.50 | Risk premium sensitivity to reserves |
+| $res_{ss}$ | 4.70 | Steady-state reserves (months of imports) |
 
 ## Shock Calibration
 
 Both scenarios use **1 standard deviation shocks**:
-- Global demand: ε_y_row = 1.0 (stderr = 0.5)
-- SA activity: ε_y_zaf = 1.0 (stderr = 1.0)
+- Global demand: $\varepsilon_{y,row} = 1.0$ (stderr = 0.5)
+- SA activity: $\varepsilon_{y,zaf} = 1.0$ (stderr = 1.0)
 
 The model is log-linearized around a zero-inflation, zero-output-gap steady state.
 
 ## Data and Code
 
 The IRF data and analysis code are available in the `analysis/` directory of the repository. The model source file is `lesotho_model.mod`.
+
+## Mathematical Derivation: Risk Premium Channel
+
+The interest rate tracking equation:
+
+$$i_t^{LSO} = i_t^{ZAF} + prem_t^{LSO}$$
+
+With the risk premium:
+
+$$prem_t^{LSO} = \theta(\overline{res} - res_t^{LSO})$$
+
+Combining:
+
+$$i_t^{LSO} = i_t^{ZAF} + \theta(4.7 - res_t^{LSO})$$
+
+When $res_t^{LSO} > 4.7$:
+$$i_t^{LSO} < i_t^{ZAF} \quad \text{(monetary easing)}$$
+
+When $res_t^{LSO} < 4.7$:
+$$i_t^{LSO} > i_t^{ZAF} \quad \text{(monetary tightening)}$$
+
+This creates an automatic stabilizer that amplifies SA booms but constrains fiscal expansions.
