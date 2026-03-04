@@ -111,7 +111,7 @@ rho_z = 0.80
 # the perfect-foresight path (deterministic simulation) where the
 # only shock is the oil price shock at t=0.
 
-def solve_oil_shock(shock_size_pct=10.0, T=40):
+def solve_oil_shock(shock_size_pct=10.0, T=40, shock_duration=1):
     """
     Solve the model for a deterministic oil price shock using
     the stacked-time (perfect foresight) approach.
@@ -126,6 +126,8 @@ def solve_oil_shock(shock_size_pct=10.0, T=40):
         Size of oil price inflation shock in percentage points.
     T : int
         Number of periods (quarters) to simulate.
+    shock_duration : int
+        Number of consecutive quarters the shock is applied (default 1).
 
     Returns
     -------
@@ -151,9 +153,10 @@ def solve_oil_shock(shock_size_pct=10.0, T=40):
     x = {v: np.zeros(T_ext + 2) for v in vars_names}  # index 0 = period -1 (lag)
     # So x[v][t+1] = value at period t (t=0 is impact period)
 
-    # Oil price shock: eps_oil at t=0 = shock_size_pct
+    # Oil price shock: eps_oil applied for shock_duration quarters
     eps_oil = np.zeros(T_ext + 2)
-    eps_oil[1] = shock_size_pct  # period 0 shock (index 1 in array)
+    for q in range(shock_duration):
+        eps_oil[1 + q] = shock_size_pct  # index 1 = period 0
 
     # All other shocks are zero
 
@@ -340,14 +343,17 @@ def compute_cumulative_oil_price(pi_oil_path):
     return cumulative
 
 
-def create_irf_plots(results, T=40, output_dir='/home/user/lesotho-qpm'):
+def create_irf_plots(results, T=40, output_dir='/home/user/lesotho-qpm',
+                     shock_duration=1):
     """Generate publication-quality IRF plots for the oil shock."""
 
     quarters = np.arange(T)
+    dur_label = (f" (Persistent, {shock_duration}Q)"
+                 if shock_duration > 1 else "")
 
     # ===== Figure 1: Main Macroeconomic Variables =====
     fig, axes = plt.subplots(3, 3, figsize=(14, 11))
-    fig.suptitle('Impulse Responses to a 10% Oil Price Shock\nLesotho QPM Model',
+    fig.suptitle(f'Impulse Responses to a 10% Oil Price Shock{dur_label}\nLesotho QPM Model',
                  fontsize=14, fontweight='bold', y=0.98)
 
     plot_specs = [
@@ -379,7 +385,7 @@ def create_irf_plots(results, T=40, output_dir='/home/user/lesotho-qpm'):
 
     # ===== Figure 2: Reserves and Risk Premium Channel =====
     fig, axes = plt.subplots(2, 3, figsize=(14, 8))
-    fig.suptitle('Oil Shock: Reserves and Risk Premium Channel\nLesotho QPM Model',
+    fig.suptitle(f'Oil Shock{dur_label}: Reserves and Risk Premium Channel\nLesotho QPM Model',
                  fontsize=14, fontweight='bold', y=0.98)
 
     # Cumulative oil price level
@@ -432,7 +438,7 @@ def create_irf_plots(results, T=40, output_dir='/home/user/lesotho-qpm'):
 
     ax.plot(quarters, results['pi_lso'], 'k-', linewidth=2, label='Total Lesotho inflation')
     ax.axhline(y=0, color='black', linewidth=0.5)
-    ax.set_title('Lesotho Inflation Decomposition After 10% Oil Price Shock',
+    ax.set_title(f'Lesotho Inflation Decomposition After 10% Oil Price Shock{dur_label}',
                 fontsize=13, fontweight='bold')
     ax.set_xlabel('Quarters after shock', fontsize=11)
     ax.set_ylabel('Percentage points', fontsize=11)
@@ -447,7 +453,7 @@ def create_irf_plots(results, T=40, output_dir='/home/user/lesotho-qpm'):
 
     # ===== Figure 4: Lesotho vs South Africa Comparison =====
     fig, axes = plt.subplots(1, 3, figsize=(14, 5))
-    fig.suptitle('Oil Shock: Lesotho vs South Africa Comparison',
+    fig.suptitle(f'Oil Shock{dur_label}: Lesotho vs South Africa Comparison',
                  fontsize=14, fontweight='bold', y=1.02)
 
     # Inflation comparison
@@ -528,14 +534,16 @@ def generate_summary_table(results, T=40):
     return summary
 
 
-def save_results_json(results, summary, output_dir='/home/user/lesotho-qpm'):
+def save_results_json(results, summary, output_dir='/home/user/lesotho-qpm',
+                      shock_duration=1):
     """Save numerical results for the report."""
 
     # Convert numpy arrays to lists for JSON serialization
     json_results = {k: v.tolist() for k, v in results.items()}
 
     output = {
-        'shock': '10% oil price shock (eps_oil = 10.0)',
+        'shock': f'10% oil price shock, {shock_duration}Q persistent (eps_oil = 10.0 for {shock_duration} quarters)',
+        'shock_duration': shock_duration,
         'model': 'Lesotho QPM v2 (recalibrated)',
         'method': 'Perfect foresight / iterative expectations',
         'horizon': len(next(iter(results.values()))),
@@ -554,14 +562,18 @@ def save_results_json(results, summary, output_dir='/home/user/lesotho-qpm'):
 # =========================================================================
 
 if __name__ == '__main__':
+    SHOCK_DURATION = 4  # Persistent shock: 4 consecutive quarters
+
     print("=" * 70)
-    print("LESOTHO QPM: 10% OIL PRICE SHOCK SIMULATION")
+    print(f"LESOTHO QPM: 10% OIL PRICE SHOCK ({SHOCK_DURATION}Q PERSISTENT)")
     print("=" * 70)
     print()
 
     # Solve the model
-    print("Solving model with 10% oil price shock...")
-    results, var_names = solve_oil_shock(shock_size_pct=10.0, T=40)
+    print(f"Solving model with 10% oil price shock persisting {SHOCK_DURATION} quarters...")
+    results, var_names = solve_oil_shock(
+        shock_size_pct=10.0, T=40, shock_duration=SHOCK_DURATION
+    )
 
     print()
     print("Key Impact Results:")
@@ -578,27 +590,27 @@ if __name__ == '__main__':
 
     peak_pi = np.max(results['pi_lso'])
     peak_pi_q = np.argmax(results['pi_lso'])
-    trough_y = np.min(results['y_lso'])
-    trough_y_q = np.argmin(results['y_lso'])
+    peak_y = np.max(results['y_lso'])
+    peak_y_q = np.argmax(results['y_lso'])
     print(f"  Lesotho inflation peak:         {peak_pi:+.2f} pp (Q{peak_pi_q})")
-    print(f"  Lesotho output trough:          {trough_y:+.4f} pp (Q{trough_y_q})")
+    print(f"  Lesotho output peak:            {peak_y:+.4f} pp (Q{peak_y_q})")
     print()
 
     # Generate plots
     print("Generating IRF plots...")
-    create_irf_plots(results, T=40)
+    create_irf_plots(results, T=40, shock_duration=SHOCK_DURATION)
 
     # Generate summary table
     print("Generating summary statistics...")
     summary = generate_summary_table(results)
 
     # Save results
-    save_results_json(results, summary)
+    save_results_json(results, summary, shock_duration=SHOCK_DURATION)
 
     # Print summary table
     print()
     print("=" * 90)
-    print("SUMMARY TABLE: 10% Oil Price Shock")
+    print(f"SUMMARY TABLE: 10% Oil Price Shock ({SHOCK_DURATION}Q Persistent)")
     print("=" * 90)
     df = pd.DataFrame(summary).T
     print(df.to_string())
