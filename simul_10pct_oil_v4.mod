@@ -36,7 +36,7 @@ lambda_1=0.50; lambda_2=0.30; lambda_3=0.15; lambda_4=0.03; lambda_5=0.05;
 phi_i=0.75; phi_pi=1.50; phi_y=0.50; pi_target_zaf=4.50;
 sigma_s=0.50;
 rho_y_row=0.80; rho_pi_row=0.50; rho_i_row=0.75;
-rho_oil=0.70; rho_food=0.60; rho_com=0.70; rho_d_rcom=0.70; kappa_oil_food=0.05;
+rho_oil=0.80; rho_food=0.60; rho_com=0.70; rho_d_rcom=0.70; kappa_oil_food=0.05;
 rho_g=0.70; rho_z=0.80;
 
 model(linear);
@@ -77,7 +77,7 @@ steady;
 check;
 
 // Unanticipated 10% oil price LEVEL shock (one-time surprise)
-// poil_gap jumps 0.10, then decays at rho_oil=0.70
+// poil_gap jumps 0.10, then decays at rho_oil=0.80
 // pi_oil spikes in Q1 then turns negative as level reverts
 shocks;
     var eps_oil; stderr 0.10;

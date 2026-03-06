@@ -101,7 +101,7 @@ These use AR(1) on the **price level gap**. Inflation is the first difference.
 
 | Shock | Variable | Typical Size | AR(1) rho | Key Channels |
 |-------|----------|:---:|:---:|------|
-| Oil price | `eps_oil` | 0.10 (10%) | 0.70 | Oil→SA inflation ($\lambda_4$), oil→food ($\kappa$), CPI differentials |
+| Oil price | `eps_oil` | 0.10 (10%) | 0.80 | Oil→SA inflation ($\lambda_4$), oil→food ($\kappa$), CPI differentials |
 | Food price | `eps_food` | 0.10 (10%) | 0.60 | Food→SA inflation ($\lambda_5$), food CPI differential |
 | Combined oil+food | `eps_oil` + `eps_food` | varies | 0.70/0.60 | All commodity channels |
 
@@ -139,7 +139,7 @@ eps_t = 0                     for t > N  (natural decay)
 ```
 
 **Examples:**
-- Oil at +10% for 4Q, rho=0.70: eps = {0.10, 0.03, 0.03, 0.03}
+- Oil at +10% for 4Q, rho=0.80: eps = {0.10, 0.02, 0.02, 0.02}
 - Food at +5% for 2Q, rho=0.60: eps = {0.05, 0.02}
 - Oil at +10% for 1Q only: eps = {0.10}
 
@@ -168,7 +168,7 @@ base_irf = @(varname) oo_.irfs.([varname '_<shock_name>']);
 
 % Define shock sequence relative to base IRF magnitude
 % Example: oil sustained 4Q with stderr=0.10
-% eps = {0.10, 0.03, 0.03, 0.03} → weights = {1.0, 0.3, 0.3, 0.3}
+% eps = {0.10, 0.02, 0.02, 0.02} → weights = {1.0, 0.2, 0.2, 0.2}
 shock_weights = [1.0, 0.3, 0.3, 0.3];
 shock_periods = [1, 2, 3, 4];
 
@@ -279,7 +279,7 @@ sigma_s=0.50;
 rho_y_row=0.80; rho_pi_row=0.50; rho_i_row=0.75;
 
 % Commodities
-rho_oil=0.70; rho_food=0.60; rho_com=0.70; rho_d_rcom=0.70; kappa_oil_food=0.05;
+rho_oil=0.80; rho_food=0.60; rho_com=0.70; rho_d_rcom=0.70; kappa_oil_food=0.05;
 
 % Other
 rho_g=0.70; rho_z=0.80;

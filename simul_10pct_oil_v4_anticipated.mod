@@ -35,7 +35,7 @@ lambda_1=0.50; lambda_2=0.30; lambda_3=0.15; lambda_4=0.03; lambda_5=0.05;
 phi_i=0.75; phi_pi=1.50; phi_y=0.50; pi_target_zaf=4.50;
 sigma_s=0.50;
 rho_y_row=0.80; rho_pi_row=0.50; rho_i_row=0.75;
-rho_oil=0.70; rho_food=0.60; rho_com=0.70; rho_d_rcom=0.70; kappa_oil_food=0.05;
+rho_oil=0.80; rho_food=0.60; rho_com=0.70; rho_d_rcom=0.70; kappa_oil_food=0.05;
 rho_g=0.70; rho_z=0.80;
 
 model(linear);
@@ -81,12 +81,12 @@ end;
 steady;
 
 // Same shock sequence: hold poil_gap=0.10 for Q1-Q4
-// eps = {0.10, 0.03, 0.03, 0.03}
+// eps = {0.10, 0.02, 0.02, 0.02} (rho_oil=0.80)
 // Under perfect foresight, agents know all 4 shocks at t=0
 shocks;
     var eps_oil;
     periods 1     2     3     4;
-    values  0.10  0.03  0.03  0.03;
+    values  0.10  0.02  0.02  0.02;
 end;
 
 perfect_foresight_setup(periods=40);

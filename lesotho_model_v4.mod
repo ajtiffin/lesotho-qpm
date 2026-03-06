@@ -240,7 +240,7 @@ rho_pi_row  = 0.50;     // US inflation persistence
 rho_i_row   = 0.75;     // US interest rate persistence
 
 // Commodity Prices
-rho_oil     = 0.70;     // Oil price persistence
+rho_oil     = 0.80;     // Oil price persistence
 rho_food    = 0.60;     // Food price persistence
 rho_com     = 0.70;     // Nominal commodity price persistence
 rho_d_rcom  = 0.70;     // Persistence of commodity price gap
