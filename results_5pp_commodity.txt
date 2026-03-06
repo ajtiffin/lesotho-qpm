@@ -1,0 +1,31 @@
+=== 5pp Global Commodity Price Shock Results ===
+
+Lesotho Peak Responses (percentage points):
+  Output gap (y_lso):          +0.0007 at period 4
+  Inflation (pi_lso):          +0.0006 at period 39
+  Interest rate (i_lso):       +0.0006 at period 40
+  REER (z_lso):                +0.0022 at period 5
+  Reserves gap (res_gap_lso):  -0.0002 at period 10
+  Risk premium (prem_lso):     +0.0001 at period 10
+
+South Africa Peak Responses:
+  Output gap (y_zaf):          +0.0005 at period 3
+  Inflation (pi_zaf):          +0.0006 at period 39
+
+Commodity Variables:
+  Real commodity price (rcom): +0.0500 at period 2
+  Commodity inflation (pi_com):+0.0500 at period 2
+
+First 8 quarters impulse responses:
+
+Quarter | y_lso  | pi_lso | i_lso  | z_lso  | res_gap | y_zaf  | pi_zaf | rcom   |
+--------|--------|--------|--------|--------|---------|--------|--------|--------|
+    1   | +0.0000 | +0.0000 | +0.0000 | +0.0000 | +0.0000  | +0.0000 | +0.0000 | +0.0000 |
+    2   | +0.0003 | +0.0002 | +0.0002 | -0.0009 | +0.0000  | +0.0005 | +0.0002 | +0.0500 |
+    3   | +0.0006 | +0.0004 | +0.0003 | -0.0016 | -0.0000  | +0.0005 | +0.0003 | +0.0350 |
+    4   | +0.0007 | +0.0005 | +0.0004 | -0.0020 | -0.0001  | +0.0004 | +0.0003 | +0.0245 |
+    5   | +0.0006 | +0.0004 | +0.0004 | -0.0022 | -0.0001  | +0.0001 | +0.0003 | +0.0171 |
+    6   | +0.0005 | +0.0003 | +0.0004 | -0.0021 | -0.0002  | -0.0000 | +0.0002 | +0.0120 |
+    7   | +0.0004 | +0.0002 | +0.0003 | -0.0018 | -0.0002  | -0.0002 | +0.0001 | +0.0084 |
+    8   | +0.0003 | +0.0001 | +0.0002 | -0.0015 | -0.0002  | -0.0002 | +0.0000 | +0.0059 |
+

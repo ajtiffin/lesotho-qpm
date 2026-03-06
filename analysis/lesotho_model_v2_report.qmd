@@ -1,0 +1,366 @@
+---
+title: "Lesotho QPM Model Version 2: Commodity Price Extension"
+subtitle: "Technical Specification and Transmission Analysis"
+author: "Model Documentation"
+date: "2026-02-16"
+format:
+  pdf:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    fig-cap-location: top
+    tbl-cap-location: top
+    geometry:
+      - margin=1in
+    fontsize: 11pt
+    include-in-header:
+      text: |
+        \usepackage{booktabs}
+        \usepackage{amsmath}
+        \usepackage{amsfonts}
+---
+
+## Executive Summary
+
+This report documents **Version 2** of the Lesotho Quarterly Projection Model (QPM), which extends the baseline specification to include **commodity price effects** in the South Africa block, following the SARB QPM framework (WP/17/01).
+
+**Key Changes:**
+- Added real commodity price (terms of trade) channel to SA IS curve
+- Implemented trend-deviation decomposition for commodity prices
+- Calibrated `gamma_6 = 0.01` (commodity output elasticity) from SARB
+
+**Key Finding:**
+Despite the small commodity effect in SA (peak output response: 0.03%), Lesotho experiences **3x amplification** (peak output response: 0.09%) due to the reserve-risk premium feedback mechanism.
+
+**Critical Question for Review:**
+The model specification includes a channel where REER appreciation ($z^{LSO} < 0$) leads to reserve accumulation via the term $-f_2 z^{LSO}_{t-1}$. This paper documents this channel and invites external assessment of its economic plausibility.
+
+---
+
+## 1. Model Overview
+
+### 1.1 Three-Block Structure
+
+The model maintains the two-country semi-structural framework from Version 1:
+
+1. **Lesotho Module:** Small open economy with currency peg, reserves dynamics, and risk premium
+2. **South Africa Module:** Inflation-targeting economy with flexible exchange rate (now including commodity prices)
+3. **Rest of World (US) Module:** Exogenous AR processes for external conditions
+
+### 1.2 Key Equations
+
+#### Lesotho IS Curve
+$$\hat{y}^{LSO}_t = \alpha_1 \hat{y}^{LSO}_{t-1} + \alpha_2 E_t\hat{y}^{LSO}_{t+1} + \alpha_3 \hat{y}^{ZAF}_t - \alpha_4\left[\alpha_5 \hat{r}^{LSO}_t + (1-\alpha_5)\hat{z}^{LSO}_t\right] + \alpha_6 G^{LSO}_t + \varepsilon^{y,LSO}_t$$
+
+#### South Africa IS Curve (Version 2 Extension)
+$$\hat{y}^{ZAF}_t = \gamma_1 \hat{y}^{ZAF}_{t-1} + \gamma_2 E_t\hat{y}^{ZAF}_{t+1} - \gamma_3 \hat{r}^{ZAF}_t + \gamma_4 \hat{z}^{ZAF}_t + \gamma_5 \hat{y}^{ROW}_t + \underbrace{\gamma_6 \cdot d\,rcom_t}_{\text{NEW}} + \varepsilon^{y,ZAF}_t$$
+
+Where:
+- $d\,rcom_t$ = deviation of real commodity price from trend (gap)
+- $\gamma_6 = 0.01$ (SARB calibration)
+
+#### Reserves Gap Dynamics
+$$\widehat{res}^{LSO}_t = \delta \widehat{res}^{LSO}_{t-1} - f_1 G^{LSO}_{t-1} - f_2 \hat{z}^{LSO}_{t-1} + \varepsilon^{res}_t$$
+
+#### Risk Premium
+$$\widehat{prem}^{LSO}_t = \theta\left(\overline{res}^{LSO}_t - res^{LSO}_t\right) + \varepsilon^{prem}_t$$
+
+---
+
+## 2. Version 2 Changes
+
+### 2.1 New Variables
+
+| Variable | Type | Description |
+|----------|------|-------------|
+| `rcom` | Endogenous | Real commodity price index (level) |
+| `rcom_bar` | Endogenous | Trend component of real commodity price |
+| `d_rcom` | Endogenous | **Deviation from trend** (enters IS curve) |
+| `pi_com` | Endogenous | Nominal commodity price inflation |
+| `eps_com` | Exogenous | Cyclical commodity price shock |
+| `eps_rcom_trend` | Exogenous | Trend commodity price shock |
+
+### 2.2 Commodity Price Decomposition
+
+Following SARB WP/17/01, the model decomposes real commodity prices into:
+
+**Level:** $rcom_t = \bar{rcom}_t + d\,rcom_t$
+
+**Trend:** $\bar{rcom}_t = \bar{rcom}_{t-1} + \varepsilon^{rcom\_trend}_t$ (random walk)
+
+**Gap:** $d\,rcom_t = \rho_{d\_rcom} \cdot d\,rcom_{t-1} + \varepsilon^{com}_t$ (AR(1))
+
+**Critical Design Choice:** Only the **gap** ($d\,rcom_t$) enters the SA IS curve. Using the level would create non-stationarity (unit root in commodity prices → permanent shifts in output gap).
+
+### 2.3 Calibration Changes
+
+| Parameter | V1 Value | V2 Value | Source |
+|-----------|----------|----------|--------|
+| $\gamma_6$ (commodity elasticity) | N/A | 0.01 | SARB WP/17/01 |
+| $\rho_{d\_rcom}$ (gap persistence) | N/A | 0.70 | Calibrated |
+
+All other parameters remain unchanged from Version 1.
+
+---
+
+## 3. Impulse Response Analysis
+
+### 3.1 Commodity Price Shock ($\varepsilon^{com}$)
+
+**Shock specification:** One standard deviation increase in commodity price gap (3% at Q1)
+
+#### South Africa Response
+
+| Variable | Q1 | Q4 | Q8 | Peak | Timing |
+|----------|----|----|----|------|--------|
+| $d\,rcom$ (gap) | 3.00 | 1.03 | 0.35 | 3.00 | Q1 |
+| $\hat{y}^{ZAF}$ (output) | 0.030 | 0.008 | -0.003 | 0.032 | Q2 |
+| $\pi^{ZAF}$ (inflation) | 0.009 | 0.017 | 0.011 | 0.019 | Q3 |
+| $\hat{i}^{ZAF}$ (interest rate) | 0.010 | 0.023 | 0.015 | 0.023 | Q3 |
+| $\hat{s}^{ZAF}$ (Rand/USD) | -0.030 | -0.106 | -0.147 | -0.030 | Q1 |
+
+**Key observations:**
+- Small output effect (0.03%) consistent with SARB's modest $\gamma_6 = 0.01$
+- Inflation and interest rate responses lagged (Phillips curve + Taylor rule)
+- Rand appreciation (negative $s^{ZAF}$) due to SARB tightening
+
+#### Lesotho Response
+
+| Variable | Q1 | Q4 | Q8 | Peak | Timing |
+|----------|----|----|----|------|--------|
+| $\hat{y}^{LSO}$ (output) | 0.034 | 0.094 | 0.078 | 0.097 | Q5 |
+| $\pi^{LSO}$ (inflation) | 0.040 | 0.017 | 0.008 | 0.040 | Q3 |
+| $\hat{i}^{LSO}$ (interest rate) | 0.010 | -0.021 | -0.032 | 0.010 | Q1 |
+| $\widehat{prem}^{LSO}$ (risk premium) | -0.005 | -0.039 | -0.052 | -0.052 | Q8 |
+| $\widehat{res}^{LSO}$ (reserves) | 0.000 | 0.079 | 0.132 | 0.186 | Q10 |
+
+**Key observations:**
+- Output response **3x larger** than SA (0.09% vs 0.03%)
+- Risk premium **falls** significantly (-0.052)
+- Reserves **accumulate** persistently (+0.19 at Q10)
+- Interest rate eventually **below** SARB rate due to premium compression
+
+---
+
+## 4. The Amplification Mechanism
+
+### 4.1 Overview
+
+Despite the modest commodity effect in South Africa ($\gamma_6 = 0.01$), Lesotho experiences substantial output amplification. This section traces the transmission channels.
+
+### 4.2 Direct Spillover Channel
+
+**First round:**
+$$\Delta \hat{y}^{LSO} = \alpha_3 \cdot \Delta \hat{y}^{ZAF} = 0.30 \times 0.03 = 0.009 \text{ (0.9 percent)}$$
+
+This explains only about **10%** of the peak Lesotho response (0.097).
+
+### 4.3 The Reserve-Risk Premium Feedback Loop (The Amplifier)
+
+**Step-by-step transmission:**
+
+```
+Commodity shock
+      ↓
+SARB tightens (i^ZAF ↑)
+      ↓
+Rand appreciates → Loti appreciates (z^LSO ↓ = -0.058)
+      ↓
+CBL intervenes: buys foreign currency to prevent excessive appreciation
+      ↓
+Reserves accumulate (res^LSO ↑ = +0.19 at Q10)
+      ↓
+Risk premium falls (prem^LSO ↓ = -0.052)
+      ↓
+Effective interest rate: i^LSO = i^ZAF + prem^LSO = +0.019 - 0.052 = -0.033
+      ↓
+Monetary conditions ease significantly (r^LSO ↓ = -0.050)
+      ↓
+Output boost via IS curve: -α4 × [α5×r^LSO + (1-α5)×z^LSO]
+                             = -0.45 × [0.5×(-0.05) + 0.5×(-0.13)]
+                             = -0.45 × (-0.09) = +0.041
+```
+
+**Decomposition at Q5 (peak):**
+
+| Component | Value | Contribution |
+|-----------|-------|--------------|
+| Direct SA spillover | $\alpha_3 \times y^{ZAF}$ | +0.009 |
+| Real rate channel | $-\alpha_4 \times \alpha_5 \times r^{LSO}$ | +0.011 |
+| REER channel | $-\alpha_4 \times (1-\alpha_5) \times z^{LSO}$ | +0.030 |
+| Persistence effects | $\alpha_1 \times y^{LSO}(-1) + \alpha_2 \times y^{LSO}(+1)$ | +0.047 |
+| **Total** | | **+0.097** |
+
+### 4.4 Why the Amplification?
+
+The key insight is that Lesotho's **pegged exchange rate** transforms SA's monetary tightening into **domestic monetary easing** through:
+
+1. **Currency appreciation** (tight SA policy → stronger Rand → stronger Loti)
+2. **Reserve accumulation** (intervention to manage appreciation)
+3. **Risk premium compression** (higher reserves → lower country risk)
+4. **Below-SARB interest rates** (i^LSO = i^ZAF + prem^LSO, with negative prem^LSO)
+
+This is a **counter-cyclical** mechanism that amplifies positive shocks but would also deepen negative shocks.
+
+---
+
+## 5. Critical Assessment: The Reserve Channel
+
+### 5.1 The Specification
+
+The reserves gap equation includes:
+$$\widehat{res}^{LSO}_t = \delta \widehat{res}^{LSO}_{t-1} - f_1 G^{LSO}_{t-1} \underbrace{- f_2 \hat{z}^{LSO}_{t-1}}_{\text{key term}} + \varepsilon^{res}_t$$
+
+With $f_2 = 0.30$ (calibrated to match IMF IRFs).
+
+**Sign interpretation:**
+- $\hat{z}^{LSO} > 0$ (depreciation pressure): $-f_2 \times (+) =$ reserves **decline**
+- $\hat{z}^{LSO} < 0$ (appreciation pressure): $-f_2 \times (-) =$ reserves **accumulate**
+
+### 5.2 Economic Rationale
+
+**Standard central bank intervention logic:**
+- **Depreciation pressure:** CBL sells FX to support Loti → reserves ↓
+- **Appreciation pressure:** CBL buys FX to prevent excessive appreciation → reserves ↑
+
+**For Lesotho's CMA arrangement:**
+- Rand appreciation (from SARB tightening) automatically appreciates Loti
+- CBL faces **capital inflows** seeking CMA yields + currency strength
+- To maintain orderly markets, CBL accumulates reserves
+
+### 5.3 Questions for External Review
+
+**Issue 1: Asymmetry of Response**
+- Does the magnitude of reserve accumulation ($f_2 = 0.30$) match empirical evidence?
+- Is appreciation intervention symmetric to depreciation intervention in Lesotho?
+
+**Issue 2: CMA Institutional Context**
+- Does the Common Monetary Area framework actually permit/require this intervention?
+- How does the Rand Currency Area agreement constrain CBL reserve management?
+
+**Issue 3: Empirical Validation**
+- Can we observe this mechanism in Lesotho's historical data?
+- Are there episodes of Rand appreciation leading to Lesotho reserve accumulation?
+
+**Issue 4: Alternative Specifications**
+- Should the channel be $-f_2 \times \Delta \hat{z}^{LSO}$ (change in REER) rather than level?
+- Should appreciation and depreciation have different coefficients (asymmetric response)?
+
+### 5.4 Sensitivity Analysis
+
+To assess robustness, the following parameter ranges should be tested:
+
+| Parameter | Base Value | Test Range | Impact |
+|-----------|-----------|------------|--------|
+| $f_2$ | 0.30 | 0.15 - 0.45 | Direct effect on reserve accumulation |
+| $\theta$ | 0.35 | 0.20 - 0.50 | Premium sensitivity (amplifies $f_2$ effect) |
+| $\delta$ | 0.90 | 0.80 - 0.95 | Reserve persistence (long-run effects) |
+
+---
+
+## 6. Conclusion
+
+### 6.1 Key Findings
+
+1. **Commodity price channel is operational:** The SARB-specified commodity terms of trade effect ($\gamma_6 = 0.01$) produces economically sensible IRFs.
+
+2. **Amplification is substantial:** Lesotho output responds 3x more than SA output to commodity shocks due to the reserve-risk premium mechanism.
+
+3. **Stationarity is preserved:** The trend-deviation decomposition for commodity prices ensures IRFs return to steady state.
+
+### 6.2 Areas for Further Research
+
+1. **Validate the $f_2$ channel** with Lesotho historical data
+2. **Test asymmetry:** Does reserve accumulation from appreciation equal reserve depletion from depreciation?
+3. **CMA institutional details:** How do currency area agreements constrain reserve management?
+4. **Sensitivity:** Test robustness of amplification to alternative $f_2$, $\theta$ values
+
+### 6.3 Model Status
+
+**Version 2 is ready for:**
+- Policy scenario analysis
+- Shock decomposition exercises
+- Forecasting applications
+
+**Before operational use, consider:**
+- External review of reserve channel specification
+- Empirical validation of key elasticities
+- Sensitivity testing of amplification mechanism
+
+---
+
+## Appendix A: Complete Variable List
+
+### Lesotho Variables
+| Variable | Description | Steady State |
+|----------|-------------|--------------|
+| $y^{LSO}$ | Output gap (% dev from potential) | 0 |
+| $\pi^{LSO}$ | Inflation (y-o-y %) | 0 |
+| $i^{LSO}$ | Nominal interest rate | 0 |
+| $r^{LSO}$ | Real interest rate | 0 |
+| $z^{LSO}$ | REER gap (+ = depreciation) | 0 |
+| $s^{LSO}$ | Nominal exchange rate (Loti/USD) | 0 |
+| $\widehat{res}^{LSO}$ | Reserves gap (months of imports) | 0 |
+| $\overline{res}^{LSO}$ | Desired reserves | 4.70 |
+| $prem^{LSO}$ | Currency risk premium | 0 |
+| $G^{LSO}$ | Government spending (% GDP) | 0 |
+
+### South Africa Variables
+| Variable | Description | Steady State |
+|----------|-------------|--------------|
+| $y^{ZAF}$ | Output gap | 0 |
+| $\pi^{ZAF}$ | Inflation | 0 |
+| $i^{ZAF}$ | Nominal interest rate | 0 |
+| $r^{ZAF}$ | Real interest rate | 0 |
+| $z^{ZAF}$ | REER gap | 0 |
+| $s^{ZAF}$ | Nominal exchange rate (Rand/USD) | 0 |
+| $d\,rcom$ | Commodity price gap (NEW) | 0 |
+
+### Rest of World
+| Variable | Description | Steady State |
+|----------|-------------|--------------|
+| $y^{ROW}$ | US output gap | 0 |
+| $\pi^{ROW}$ | US inflation | 0 |
+| $i^{ROW}$ | US Fed funds rate | 0 |
+
+---
+
+## Appendix B: Parameter Calibration Summary
+
+| Parameter | Value | Description | Source |
+|-----------|-------|-------------|--------|
+| $\alpha_1$ | 0.50 | Output persistence | IMF |
+| $\alpha_2$ | 0.10 | Forward-looking | IMF |
+| $\alpha_3$ | 0.30 | SA spillover | Calibrated |
+| $\alpha_4$ | 0.45 | Monetary conditions | IMF |
+| $\alpha_5$ | 0.50 | r vs z weight | IMF |
+| $\alpha_6$ | 0.30 | Fiscal multiplier | IMF |
+| $\beta_1$ | 0.25 | Phillips curve slope | Calibrated |
+| $\delta$ | 0.90 | Reserve persistence | Calibrated |
+| $f_1$ | 0.35 | Fiscal leakage | Calibrated |
+| $f_2$ | 0.30 | **Exchange rate effect** | Calibrated |
+| $\theta$ | 0.35 | Premium sensitivity | Calibrated |
+| $\gamma_1$ | 0.55 | SA output persistence | Calibrated |
+| $\gamma_2$ | 0.10 | SA forward-looking | Calibrated |
+| $\gamma_3$ | 0.25 | SA real rate effect | Calibrated |
+| $\gamma_4$ | 0.08 | SA REER effect | Calibrated |
+| $\gamma_5$ | 0.10 | Foreign output spillover | Calibrated |
+| $\gamma_6$ | **0.01** | **Commodity effect** | **SARB** |
+| $\rho_{d\_rcom}$ | 0.70 | Commodity gap persistence | Calibrated |
+
+---
+
+## Appendix C: Model Files
+
+- `lesotho_model_v2.mod` - Main Dynare model file
+- `lesotho_model.mod` - Version 1 (baseline) for comparison
+- `WP1701.pdf` - SARB QPM documentation
+- `CR2023269.pdf` - IMF Country Report (baseline specification)
+
+---
+
+## References
+
+1. IMF (2023). *Kingdom of Lesotho: 2023 Article IV Consultation—Selected Issues Paper: Modeling the Impact of External Shocks on Lesotho*. Country Report No. 2023/269.
+
+2. South African Reserve Bank (2017). *The SARB's quarterly projection model (QPM)*. Working Paper WP/17/01.
