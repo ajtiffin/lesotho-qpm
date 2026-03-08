@@ -10,6 +10,10 @@
 // - Added oil-to-food price linkage (kappa_oil_food)
 // - These enrich oil/food transmission: SA inflation now responds to oil,
 //   food prices respond to oil, roughly doubling Lesotho inflation impact
+//
+// V4 Recalibration (2026-03-08):
+// - lambda_4: 0.03 -> 0.08 (lower bound, Ndou, Gumata & Ncube 2017, range 0.08-0.12)
+// - lambda_5: 0.05 -> 0.10 (lower bound, Kabundi, Schaling & Some 2020, range 0.10-0.20)
 // =========================================================================
 
 // -------------------------------------------------------------------------
@@ -222,8 +226,8 @@ gamma_6     = 0.01;     // Commodity terms of trade effect (SARB: a6 = 0.01)
 lambda_1    = 0.50;     // Backward-looking weight
 lambda_2    = 0.30;     // Output gap effect
 lambda_3    = 0.15;     // Exchange rate pass-through
-lambda_4    = 0.03;     // Oil price pass-through (NEW v4: fuel CPI 4.58% x BFP ~0.45 + indirect)
-lambda_5    = 0.05;     // Food price pass-through (NEW v4: food CPI 17.24% x intl pass-through)
+lambda_4    = 0.08;     // Oil price pass-through (recalib: lower bound Ndou et al. 2017, range 0.08-0.12)
+lambda_5    = 0.10;     // Food price pass-through (recalib: lower bound Kabundi et al. 2020, range 0.10-0.20)
 
 // South Africa Taylor Rule
 phi_i       = 0.75;     // Interest rate smoothing
