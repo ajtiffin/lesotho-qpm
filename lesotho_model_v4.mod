@@ -226,8 +226,8 @@ gamma_6     = 0.01;     // Commodity terms of trade effect (SARB: a6 = 0.01)
 lambda_1    = 0.50;     // Backward-looking weight
 lambda_2    = 0.30;     // Output gap effect
 lambda_3    = 0.15;     // Exchange rate pass-through
-lambda_4    = 0.08;     // Oil price pass-through (recalib: lower bound Ndou et al. 2017, range 0.08-0.12)
-lambda_5    = 0.10;     // Food price pass-through (recalib: lower bound Kabundi et al. 2020, range 0.10-0.20)
+lambda_4    = 0.03;     // Oil price pass-through to SA inflation
+lambda_5    = 0.05;     // Food price pass-through to SA inflation
 
 // South Africa Taylor Rule
 phi_i       = 0.75;     // Interest rate smoothing

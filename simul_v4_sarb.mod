@@ -32,7 +32,7 @@ beta_1=0.25; omega_1_lso=0.08; omega_1_zaf=0.05; omega_2_lso=0.35; omega_2_zaf=0
 delta_res=0.90; f_1=0.35; f_3=0.10; f_4=0.02; rho_res_bar=0.90; res_ss=4.70;
 theta_prem=0.35;
 gamma_1=0.55; gamma_2=0.10; gamma_3=0.25; gamma_4=0.08; gamma_5=0.10; gamma_6=0.01;
-lambda_1=0.50; lambda_2=0.30; lambda_3=0.15; lambda_4=0.08; lambda_5=0.10;
+lambda_1=0.50; lambda_2=0.30; lambda_3=0.15; lambda_4=0.03; lambda_5=0.05;
 phi_i=0.75; phi_pi=1.50; phi_y=0.50; pi_target_zaf=4.50;
 sigma_s=0.50;
 rho_y_row=0.80; rho_pi_row=0.50; rho_i_row=0.75;

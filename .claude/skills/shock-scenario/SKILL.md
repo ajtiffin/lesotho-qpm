@@ -28,6 +28,8 @@ Extract from the user's description:
 
 If anything is ambiguous, ask the user before proceeding.
 
+Also check whether the user wants to include the **Claude Code process box** at the top of the report (see Report Template Structure below). Default is **off** unless the user requests it or mentions demonstrating Claude Code's capabilities.
+
 ### Step 2: Present Shock Design (Get Approval)
 
 Show the user:
@@ -268,6 +270,8 @@ gamma_1=0.55; gamma_2=0.10; gamma_3=0.25; gamma_4=0.08; gamma_5=0.10; gamma_6=0.
 
 % SA Phillips
 lambda_1=0.50; lambda_2=0.30; lambda_3=0.15; lambda_4=0.03; lambda_5=0.05;
+// NOTE: lambda_4/lambda_5 were briefly recalibrated to 0.08/0.10 (Ndou et al. 2017,
+// Kabundi et al. 2020) but reverted to 0.03/0.05 per SA team feedback (March 2026).
 
 % SA Taylor
 phi_i=0.75; phi_pi=1.50; phi_y=0.50; pi_target_zaf=4.50;
@@ -349,7 +353,7 @@ Use `analysis/oil_shock_report.qmd` as the template. Standard YAML header:
 title: "<Shock Type> Analysis"
 subtitle: "Lesotho QPM Version 4 — <Shock Description>"
 date: "<Current Month Year>"
-author: "Research Team"
+author: "Claude Code (supervised by Andrew Tiffin)"
 format:
   typst:
     toc: true
@@ -362,6 +366,30 @@ format:
     mainfont: "New Computer Modern"
     fontsize: 11pt
 ---
+```
+
+### Claude Code Process Box (Optional)
+
+If the user has requested a process box, include the following Quarto callout immediately after the metadata lines and before the Executive Summary. Populate the steps with what was actually done, and estimate wall-clock time from prompt to final PDF.
+
+```markdown
+::: {.callout-note}
+## How This Report Was Built
+
+This report was generated end-to-end by Claude Code (Anthropic's AI coding agent) from a single natural-language prompt: *"<user's original request, paraphrased>"*
+
+Claude Code executed the following steps autonomously:
+
+1. **Parsed the request** and mapped it to the V4 model's shock catalog, identifying the eps sequence needed for <brief shock description>.
+2. **Presented the shock design** — eps weights, expected price paths, transmission channels — and waited for human approval before proceeding.
+3. **Wrote the Dynare .mod file** (`simul_<name>.mod`), specifying the full 28-equation V4 model.
+4. **Ran Dynare via Octave**, verified Blanchard-Kahn conditions and steady state convergence.
+5. **Generated IRF charts** using <superposition / perfect foresight> to construct the shock path.
+6. **Wrote this analytical report**, populating all tables and text with actual simulation values.
+7. **Rendered to PDF** via Quarto and Typst.
+
+Total wall-clock time from initial prompt to final PDF: approximately **N minutes**. All code, charts, and narrative were produced without manual intervention beyond the initial design approval.
+:::
 ```
 
 ### Standard Sections

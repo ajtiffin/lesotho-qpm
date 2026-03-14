@@ -1,0 +1,139 @@
+---
+title: "Comparative Assessment: Claude Code vs Kimi 2.5"
+subtitle: "Anticipated Oil Shock Analysis — Error Identification and Analytical Differences"
+date: "March 2026"
+author: "Andrew Tiffin"
+format:
+  typst:
+    toc: false
+    number-sections: true
+    columns: 1
+    margin:
+      x: 2.5cm
+      y: 2.5cm
+    mainfont: "New Computer Modern"
+    fontsize: 11pt
+---
+
+\
+
+**Context:** Both Claude Code (Anthropic) and Kimi 2.5 (Moonshot AI) ran identical simulations — a 10% anticipated oil price shock sustained Q1–Q4 under perfect foresight — using the same Dynare model file. This document compares the outputs and identifies errors in the Kimi report.
+
+# Simulation Results: Agreement
+
+Both reports use the same `.mod` file and Dynare solver. The raw IRF numbers match exactly to the reported precision (2 decimal places). There is no disagreement on the simulation itself:
+
+| Variable (Q1) | Claude Code | Kimi 2.5 |
+|:--------------|:---:|:---:|
+| Lesotho inflation | +0.88pp | +0.88pp |
+| Lesotho output gap | +0.07pp | +0.07pp |
+| Lesotho real rate | −0.28pp | −0.28pp |
+| SA inflation | +0.49pp | +0.49pp |
+| SARB policy rate | +14bp | +14bp |
+
+: Simulation results are identical {#tbl-match}
+
+This is expected — both ran the same deterministic solver on the same linear model. The differences lie entirely in analysis and interpretation.
+
+# Errors in the Kimi Report
+
+## Error 1: Comparison Table Uses Misaligned Timing (Critical)
+
+Kimi's Table 7 compares "Anticipated Q1" with "Unanticipated Q1" and reports all unanticipated values as **0.00**:
+
+> | Variable | Anticipated Q1 | Unanticipated Q1 |
+> |:---------|:---:|:---:|
+> | Lesotho inflation | +0.88pp | **0.00pp** |
+> | SA inflation | +0.49pp | **0.00pp** |
+
+This is wrong. The unanticipated simulation produces substantial Q1 effects:
+
+| Variable | Anticipated Q1 | Unanticipated Q1 (actual) |
+|:---------|:---:|:---:|
+| Lesotho inflation | +0.88pp | **+0.79pp** |
+| Lesotho output gap | +0.07pp | **+0.02pp** |
+| Lesotho real rate | −0.28pp | **−0.08pp** |
+| SA inflation | +0.49pp | **+0.41pp** |
+| SARB policy rate | +14bp | **+7bp** |
+
+: Corrected comparison — unanticipated values are far from zero {#tbl-corrected}
+
+**Root cause:** The unanticipated simulation (`simul_oil_q2_sustained.mod`) uses `stoch_simul` with the shock at period 1, but the chart script shifts presentation to start at Q2. Kimi compared Q1 of the anticipated simulation (shock impact) with Q1 of the unanticipated *chart* (pre-shock baseline). This is an apples-to-oranges comparison that invalidates the entire table and the conclusions drawn from it.
+
+## Error 2: "Anticipation Inverts the Policy Problem" (Analytical Error)
+
+Kimi's central analytical claim (Executive Summary, Policy Implication #1):
+
+> *"Under unanticipated shocks, the same real rate channel produces the opposite sign: agents expect inflation to collapse, the real rate rises, and the shock becomes contractionary from day one."*
+
+This is incorrect. At impact (Q1), the real interest rate is negative under **both** regimes:
+
+- Anticipated: $r^{LSO}_{Q1}$ = −0.28pp
+- Unanticipated: $r^{LSO}_{Q1}$ = −0.08pp
+
+Both are stimulative. The output gap is positive under both:
+
+- Anticipated: $\hat{y}^{LSO}_{Q1}$ = +0.07pp
+- Unanticipated: $\hat{y}^{LSO}_{Q1}$ = +0.02pp
+
+There is no sign inversion at impact. The real difference is that under the unanticipated regime, the real rate turns positive (contractionary) one quarter earlier — at Q2 (+0.07pp) versus Q3 (+0.09pp) under anticipation. Anticipation extends the stimulative phase, but does not reverse the direction of the initial response.
+
+This error follows directly from Error 1. If the unanticipated Q1 values are mistakenly reported as zero, it appears as though there is a dramatic difference when in fact the two regimes produce qualitatively similar responses with quantitative differences.
+
+## Error 3: Chart X-Axis Clipping (Minor)
+
+Kimi's chart script uses `xlim([1 T])`, which clips Q0 (the steady-state origin) from the display. Since the script explicitly prepends Q0 as a baseline reference point, this defeats the stated purpose of showing "Q0 at origin for clean visual presentation." The correct range is `xlim([0 T])`.
+
+## Error 4: Misleading Timing Claim
+
+Kimi writes:
+
+> *"Anticipated effects begin immediately at Q1; unanticipated effects wait until Q2."*
+
+This confuses chart presentation with economic substance. Under the unanticipated regime, the oil shock enters the model at period 1 (Q1 in simulation time). The chart convention of showing Q2 as the start is an artifact of the presentation design for the sustained unanticipated report, not a property of the economic model. Both shocks produce immediate contemporaneous effects in the quarter they arrive.
+
+# Analytical Differences (Not Errors)
+
+## Framing of the Core Mechanism
+
+**Kimi** frames the story around anticipation as a qualitative regime switch — a different kind of problem requiring different policy responses. This produces a compelling narrative but overstates the difference.
+
+**Claude Code** frames anticipation as a quantitative amplifier within the same regime. The real rate is stimulative under both; anticipation makes it more so and extends the duration. This is less dramatic but more accurate given the model's actual dynamics.
+
+## Treatment of the Food Channel
+
+**Kimi** correctly identifies food prices as a second-wave impulse but does not quantify the relative importance at different horizons. The report notes food peaks at Q4 (+1.09%) but doesn't trace how this becomes the dominant Lesotho-specific channel from Q2 onward, once oil *inflation* drops to zero.
+
+**Claude Code** emphasises the timing structure: the oil CPI differential channel is a one-quarter spike (Q1 only, because $\pi^{oil}$ = 0 during maintenance), while the food CPI differential persists through Q4. This distinction matters for policy targeting.
+
+## Depth of Decomposition
+
+Both reports provide the Q1 inflation decomposition and reach the same numbers (SA pass-through +0.49, oil differential +0.30, food differential +0.08, output +0.02). Kimi's decomposition table is well-formatted and clearly labeled.
+
+## Policy Implications
+
+**Kimi** provides six policy implications, several of which depend on the incorrect "inversion" claim. Implications #1 and #6 are directly affected.
+
+**Claude Code** provides five implications grounded in the corrected comparison. The key difference: rather than "anticipation inverts the policy problem," the implication is "anticipation amplifies and extends the stimulative phase by about one quarter."
+
+# Summary Scorecard
+
+| Dimension | Claude Code | Kimi 2.5 |
+|:----------|:---:|:---:|
+| Simulation accuracy | Correct | Correct |
+| IRF values reported | Correct | Correct |
+| Comparison table | Correct (aligned timing) | **Wrong** (misaligned timing) |
+| Core analytical claim | Amplification (correct) | Inversion (incorrect) |
+| Chart x-axis | Shows Q0 origin | Clips Q0 |
+| Decomposition | Correct | Correct |
+| Food channel timing | Discussed | Mentioned |
+| Writing quality | Analytical | More narrative |
+| Policy implications | Grounded in data | Partly based on errors |
+
+: Comparative scorecard {#tbl-score}
+
+# Conclusion
+
+Kimi 2.5 executed the simulation correctly and produced well-formatted output — the .mod file, charts, and basic IRF reporting are all accurate. The errors are analytical, not computational. They stem from a single root cause: comparing Q1 of an anticipated simulation (shock impact period) with Q1 of a differently-timed unanticipated chart (pre-shock baseline). This timing mismatch cascades into the central interpretive claim that anticipation "inverts" the policy problem, which is not supported by the model's actual dynamics.
+
+The lesson, perhaps, is that getting the simulation right is necessary but not sufficient. The analytical layer — where you compare regimes, interpret mechanisms, and draw policy implications — is where the real value (and risk of error) lies. A model will give you the numbers; what matters is whether you read them correctly.

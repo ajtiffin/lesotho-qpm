@@ -1,0 +1,206 @@
+---
+title: "Anticipated Oil Price Shock: Independent Replication"
+subtitle: "Lesotho QPM Version 4 — 10% Oil Price Increase, Sustained Q1–Q4, Perfect Foresight"
+date: "March 2026"
+author: "Andrew Tiffin"
+format:
+  typst:
+    toc: false
+    number-sections: true
+    columns: 1
+    margin:
+      x: 2.5cm
+      y: 2.5cm
+    mainfont: "New Computer Modern"
+    fontsize: 11pt
+---
+
+\
+
+**Model:** `lesotho_model_v4.mod` (V4: BOP-based reserves, enriched oil/food transmission) \
+**Simulation:** `simul_oil_q2_anticipated.mod` — 10% oil at Q1, sustained Q1–Q4 via maintenance shocks, perfect foresight from Q1
+
+::: {.callout-note}
+## Process Note
+
+This report replicates an identical shock scenario previously run by Kimi 2.5 (Moonshot AI). Both analyses use the same .mod file and Dynare solver. The purpose is to independently verify the simulation results, provide an alternative analytical interpretation, and identify any discrepancies in the Kimi report. Section 6 contains the full comparative assessment.
+:::
+
+# Executive Summary {.unnumbered}
+
+A 10 percent oil price shock sustained for four quarters under perfect foresight produces a front-loaded inflation spike in Lesotho (+0.88pp at Q1), a brief output expansion (+0.07pp), and a sharp fall in the real interest rate (−0.28pp). The SARB tightens preemptively (+14bp at Q1, +20bp by Q2), and by Q4 the contractionary phase dominates. The shock is fully absorbed within 10 quarters.
+
+The key mechanism is straightforward: under the peg, Lesotho's nominal rate is imported from South Africa. When agents anticipate sustained inflation, expected inflation jumps — pushing the real rate down and temporarily stimulating demand. This is amplified relative to the unanticipated case (+0.88pp versus +0.79pp at Q1), but the difference is one of degree, not kind. Both regimes produce an initially negative real rate; anticipation intensifies and extends the stimulative phase by roughly one quarter.
+
+| Variable | Q1 | Q2 | Q4 | Q7 |
+|:---------|:---:|:---:|:---:|:---:|
+| Lesotho inflation | **+0.88** | +0.43 | +0.09 | −0.25 |
+| Lesotho output gap | +0.07 | +0.06 | −0.06 | −0.15 |
+| Lesotho real rate | **−0.28** | −0.07 | +0.27 | +0.12 |
+| SA inflation | +0.49 | +0.37 | +0.09 | −0.15 |
+| SARB policy rate | +0.14 | +0.20 | +0.10 | −0.09 |
+
+: Key impulse responses (pp deviation from steady state) {#tbl-summary}
+
+# Shock Design
+
+Oil prices follow an AR(1) process in levels. The shock holds the oil price gap at 10 percent for Q1–Q4 using maintenance shocks that offset natural decay ($\rho_{oil} = 0.80$):
+
+$$
+p^{oil}_t = \rho_{oil} \, p^{oil}_{t-1} + \varepsilon^{oil}_t, \qquad \pi^{oil}_t = p^{oil}_t - p^{oil}_{t-1}
+$$
+
+| Quarter | $\varepsilon^{oil}$ | $p^{oil}$ gap | $\pi^{oil}$ | Description |
+|:-------:|:---:|:---:|:---:|:---|
+| Q0 | — | 0.0% | 0.0% | Steady state |
+| Q1 | 0.10 | 10.0% | +10.0% | Initial jump |
+| Q2 | 0.02 | 10.0% | 0.0% | Maintenance |
+| Q3 | 0.02 | 10.0% | 0.0% | Maintenance |
+| Q4 | 0.02 | 10.0% | 0.0% | Last maintenance |
+| Q5 | 0.00 | 8.0% | −2.0% | Decay begins |
+| Q8 | 0.00 | 4.1% | −1.0% | Half-life ~3Q |
+
+: Oil price shock sequence {#tbl-shock}
+
+Under perfect foresight, agents at Q1 know the complete path: four quarters at 10 percent, then natural AR(1) decay. The solver converges in one iteration (error $1.4 \times 10^{-17}$), confirming the model's linearity.
+
+Food prices respond to oil via $\kappa_{oil \to food} = 0.05$, accumulating gradually to a peak of +1.09% at Q4 before reverting.
+
+![Oil and food price level gaps and inflation rates. Oil jumps to +10% at Q1 and holds through Q4. Food builds gradually, peaking at Q4.](figures/irf_oil_q2_anticipated_prices_v2.png){#fig-prices width=90%}
+
+# Transmission to South Africa
+
+## Inflation
+
+SA inflation peaks at Q1 (+0.49pp). The direct oil channel contributes $\lambda_4 \times 10.0 = 0.30$pp. The remainder comes from the forward-looking Phillips curve: because agents know inflation will persist, $E_t[\pi^{ZAF}_{t+1}]$ jumps at Q1, amplifying through the $(1-\lambda_1)$ weight on expectations. The backward-looking component ($\lambda_1 = 0.50$) then sustains the impulse into Q2–Q3.
+
+## SARB Response
+
+The Taylor rule produces a front-loaded tightening: +14bp at Q1, +20bp by Q2. The SARB sees the inflation coming and moves decisively. But note the smoothing parameter ($\phi_i = 0.75$) prevents an even larger initial move. The rate peaks at Q2, then reverses as inflation turns negative from Q5.
+
+## Output and Real Rate
+
+SA output is initially positive (+0.04pp at Q1) — the real rate falls by −0.22pp as inflation expectations outpace the nominal rate increase. By Q3, the contractionary phase begins (−0.04pp) as the real rate turns positive (+0.08pp). The trough comes at Q4 (−0.08pp).
+
+![South Africa: inflation, policy rate, output gap, and real rate. Inflation peaks at Q1. The SARB tightens preemptively. Output turns contractionary from Q3.](figures/irf_oil_q2_anticipated_sa_v2.png){#fig-sa width=90%}
+
+# Transmission to Lesotho
+
+## Inflation Dynamics
+
+Lesotho inflation peaks sharply at Q1 (+0.88pp) and decays quickly. The decomposition:
+
+| Component | Mechanism | Q1 (pp) |
+|:----------|:----------|:---:|
+| SA inflation pass-through | One-for-one | +0.49 |
+| Oil CPI differential | $(\omega^{LSO}_1 - \omega^{ZAF}_1) \times \pi^{oil}$ = 0.03 × 10.0 | +0.30 |
+| Food CPI differential | $(\omega^{LSO}_2 - \omega^{ZAF}_2) \times \pi^{food}$ = 0.15 × 0.50 | +0.08 |
+| Domestic demand | $\beta_1 \times \hat{y}^{LSO}$ = 0.25 × 0.07 | +0.02 |
+| **Total** | | **+0.88** |
+
+: Lesotho inflation decomposition at Q1 {#tbl-decomp}
+
+By Q2, oil inflation drops to zero (the level is maintained, not rising), so the oil CPI differential channel shuts off. From Q2 onward, the food CPI differential becomes the dominant Lesotho-specific channel, as food prices continue accumulating through Q4.
+
+The inflation undershoot from Q5 (−0.17pp, deepening to −0.25pp by Q7) is mechanical: oil and food prices are now *falling* from their elevated levels, so $\pi^{oil}$ and $\pi^{food}$ turn negative, dragging headline inflation below baseline.
+
+![Lesotho inflation decomposition. SA pass-through (blue) dominates. Oil differential (rust) is a Q1 spike only. Food differential (green) provides a persistent secondary impulse.](figures/irf_oil_q2_anticipated_decomposition_v2.png){#fig-decomp width=85%}
+
+## Output Gap
+
+The output response follows two phases. Initially expansionary (+0.07pp at Q1, +0.06pp at Q2) as the falling real rate stimulates demand through the IS curve. Then contractionary from Q4 (−0.06pp), deepening to −0.15pp by Q7, as the SARB-induced real rate tightening propagates through the SA output gap channel ($\alpha_3 = 0.30$) and the real rate/REER channel.
+
+The two-phase pattern is driven entirely by the real rate. At Q1, the real rate is −0.28pp (strongly stimulative); by Q3 it crosses zero, and by Q4 it reaches +0.27pp (strongly contractionary). The reversal in real rates — not in nominal rates, which peak at Q2 and decline smoothly — is the critical mechanism.
+
+## Real Exchange Rate
+
+The REER appreciates initially (−0.20pp at Q1–Q2) reflecting the inflation differential, then depreciates sharply as the inflation undershoot begins. By Q7, the REER gap is +0.59pp — a meaningful real depreciation that improves competitiveness. This is the model's automatic adjustment mechanism: higher inflation erodes competitiveness temporarily, but the subsequent undershoot more than reverses it.
+
+## Reserves
+
+Reserves deviate by less than 0.02pp from baseline throughout. Oil shocks in this model operate through price channels, not the current account. The risk premium response is correspondingly negligible.
+
+![Lesotho: inflation, output gap, REER, and real rate. The two-phase dynamics are clearly visible — expansion then contraction, appreciation then depreciation.](figures/irf_oil_q2_anticipated_lesotho_v2.png){#fig-lso width=90%}
+
+![Reserves gap and risk premium. Both negligible — oil shocks do not threaten external sustainability.](figures/irf_oil_q2_anticipated_reserves_v2.png){#fig-reserves width=90%}
+
+# Anticipated vs Unanticipated: Properly Compared
+
+The correct comparison requires aligning shock timing. Both simulations start the oil shock at period 1 (Q1). The anticipated version uses perfect foresight; the unanticipated uses stochastic simulation with superposition of surprise shocks. Comparing at the same horizon from impact:
+
+| Variable | Anticipated Q1 | Unanticipated Q1 | Difference |
+|:---------|:---:|:---:|:---:|
+| Lesotho inflation | +0.88 | **+0.79** | +0.09 |
+| Lesotho output gap | +0.07 | **+0.02** | +0.05 |
+| Lesotho real rate | −0.28 | **−0.08** | −0.20 |
+| SA inflation | +0.49 | **+0.41** | +0.08 |
+| SARB policy rate | +0.14 | **+0.07** | +0.07 |
+
+: Anticipated vs unanticipated responses at Q1 impact {#tbl-compare}
+
+Three observations:
+
+1. **Both regimes produce the same sign at impact.** The real rate is negative (stimulative) under both anticipated and unanticipated shocks at Q1. The output gap is positive under both. Anticipation amplifies the effect — a 3.6× larger real rate fall — but does not invert it.
+
+2. **The real difference is persistence.** Under the unanticipated regime, the real rate turns positive (contractionary) at Q2 (+0.07pp). Under anticipation, it stays negative through Q2 (−0.07pp) and only turns positive at Q3. Anticipation buys one extra quarter of stimulus before the contractionary phase begins.
+
+3. **Peak output gap is similar in magnitude** but shifted in time. Anticipated: trough at Q7 (−0.15pp). Unanticipated: trough at Q5 (−0.13pp). The contractionary phase arrives later under anticipation but persists similarly.
+
+# Policy Implications
+
+1. **Anticipation amplifies but does not invert.** The qualitative policy problem is the same under both regimes: an initial inflationary burst followed by undershoot, with temporary output disruption. Anticipation makes Q1 effects larger and extends the stimulative phase, but the CBL faces the same fundamental trade-off.
+
+2. **The peg transmits SARB tightening directly.** Under anticipation, the SARB front-loads by +14bp at Q1 (versus +7bp unanticipated). This tighter stance propagates through the interest rate parity condition. Lesotho cannot offset this.
+
+3. **Expectations matter for timing, not direction.** Fiscal or communication strategies aimed at managing inflation expectations can shift the timing of the real rate reversal — delaying or accelerating the contractionary phase — but cannot prevent it. The underlying oil price dynamics determine cumulative inflation.
+
+4. **Food price persistence is the medium-term channel.** After Q1, the direct oil inflation channel shuts off (level is flat). The food price channel, building through Q4 via $\kappa_{oil \to food}$, becomes the dominant Lesotho-specific transmission mechanism. Food price stabilisation policies would have more impact in Q2–Q5 than fuel price interventions.
+
+5. **External sustainability is not threatened.** Reserves deviation is negligible (<0.02pp). Oil shocks are an inflation problem, not a BOP problem, in this model.
+
+# Appendix: Full IRF Tables
+
+| Q | $\pi^{ZAF}$ | $\hat{y}^{ZAF}$ | $i^{ZAF}$ | $r^{ZAF}$ | $z^{ZAF}$ |
+|:---:|:---:|:---:|:---:|:---:|:---:|
+| 1 | +0.49 | +0.04 | +0.14 | −0.22 | −0.22 |
+| 2 | +0.37 | +0.00 | +0.20 | −0.04 | −0.29 |
+| 3 | +0.24 | −0.04 | +0.18 | +0.08 | −0.22 |
+| 4 | +0.09 | −0.08 | +0.09 | +0.17 | −0.04 |
+| 5 | −0.07 | −0.07 | +0.01 | +0.15 | +0.19 |
+| 7 | −0.15 | +0.02 | −0.09 | +0.04 | +0.54 |
+| 10 | −0.07 | +0.12 | −0.06 | −0.02 | +0.56 |
+
+: South Africa impulse responses (pp) {#tbl-zaf}
+
+| Q | $\pi^{LSO}$ | $\hat{y}^{LSO}$ | $i^{LSO}$ | $r^{LSO}$ | $z^{LSO}$ | res gap |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| 1 | +0.88 | +0.07 | +0.14 | −0.28 | −0.19 | 0.00 |
+| 2 | +0.43 | +0.06 | +0.20 | −0.07 | −0.20 | −0.01 |
+| 3 | +0.26 | +0.01 | +0.18 | +0.09 | −0.09 | −0.01 |
+| 4 | +0.09 | −0.06 | +0.10 | +0.27 | +0.09 | −0.01 |
+| 5 | −0.17 | −0.12 | +0.01 | +0.25 | +0.30 | −0.01 |
+| 7 | −0.25 | −0.15 | −0.09 | +0.12 | +0.59 | +0.02 |
+| 10 | −0.12 | −0.08 | −0.08 | +0.00 | +0.57 | +0.05 |
+
+: Lesotho impulse responses (pp) {#tbl-lso}
+
+# Technical Notes
+
+| Parameter | Value | Role |
+|-----------|:-----:|------|
+| $\lambda_4$ | 0.03 | Oil → SA inflation |
+| $\lambda_5$ | 0.05 | Food → SA inflation |
+| $\kappa_{oil \to food}$ | 0.05 | Oil → food price level |
+| $\omega^{LSO}_1 - \omega^{ZAF}_1$ | 0.03 | Oil CPI weight differential |
+| $\omega^{LSO}_2 - \omega^{ZAF}_2$ | 0.15 | Food CPI weight differential |
+| $\rho_{oil}$ | 0.80 | Oil persistence (half-life ~3.1Q) |
+| $\rho_{food}$ | 0.60 | Food persistence (half-life ~1.4Q) |
+| $\phi_i$ | 0.75 | SARB smoothing |
+| $\phi_\pi$ | 1.50 | SARB inflation response |
+| $\beta_1$ | 0.25 | LSO output → inflation |
+
+: Key parameters {#tbl-params}
+
+**Solver:** Dynare 6.5 `perfect_foresight_solver`, 40 periods, one-iteration convergence. Blanchard-Kahn satisfied (5 eigenvalues > 1 for 5 forward-looking variables).
+
+**Limitations:** Binary information structure (perfect vs. zero foresight). Linear model assumes symmetric responses. Risk premium responds to reserves only, not commodity prices directly.
